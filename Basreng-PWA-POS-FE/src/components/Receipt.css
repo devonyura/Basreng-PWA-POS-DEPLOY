@@ -1,0 +1,94 @@
+/* Receipt */
+.receipt-container {
+  padding: 10px;
+  border: 1px solid black;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.receipt {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.receipt-title th {
+  text-align: center !important;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.receipt thead tr span,
+.receipt tbody tr span {
+  display: block;
+  border-top: 1px solid black;
+  width: 100%;
+  margin-bottom: 1.5px;
+}
+
+.receipt tbody tr td:nth-child(4) {
+  width: min-content;
+}
+
+.receipt tbody tr td:nth-child(3) {
+  text-align: right;
+}
+
+.receipt tbody {
+  border-top: 1px solid black;
+}
+
+.receipt tbody {
+  border-bottom: 1px solid black;
+}
+
+.receipt th,
+.receipt td {
+  /* border: 1px solid #ddd; */
+  padding: 2px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.receipt tr th:last-child,
+.receipt tr td:last-child {
+  text-align: right;
+}
+
+.receipt tfoot {
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.receipt tfoot tr:nth-child(1) td {
+  border-bottom: 1px solid black;
+}
+
+.receipt tfoot tr:last-child td {
+  padding-top: 22px;
+  font-size: 0.6rem;
+}
+
+.info p:first-child {
+  padding-top: 15px;
+}
+
+.receipt p {
+  text-align: center;
+  margin: 0;
+  font-weight: 600;
+}
+
+.small-text {
+  font-size: 0.8rem;
+}
+
+.shopee-code td {
+  text-align: center !important;
+  font-size: x-large;
+}
+
+.shopee-code td span {
+  font-weight: 600;
+  letter-spacing: 1px;
+}
