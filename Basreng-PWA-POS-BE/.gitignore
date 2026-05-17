@@ -133,3 +133,8 @@ nb-configuration.xml
 # SENSITIVE FILE
 #-------------------------
 public/*
+
+/.htaccess
+/favicon.ico
+/index.php
+/robots.txt
