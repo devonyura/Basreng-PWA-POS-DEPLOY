@@ -128,3 +128,8 @@ nb-configuration.xml
 
 /results/
 /phpunit*.xml
+
+#-------------------------
+# SENSITIVE FILE
+#-------------------------
+public/*
