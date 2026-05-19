@@ -82,7 +82,8 @@ export const useTransactionHistory = ({
     if (!enabled || !role) return;
 
     // ⛔ cegah fetch sebelum data siap
-    if (selectedBranchId === null && role !== "admin") return;
+    const isAdmin = ["admin", "owner", "manager"].includes(role);
+    if (selectedBranchId === null && !isAdmin) return;
 
     try {
       setIsLoading(true);
@@ -122,9 +123,9 @@ export const useTransactionHistory = ({
   useEffect(() => {
     if (!enabled || !role) return;
 
-    // ⛔ tunggu semua param siap
+    // ⛔ tunggu semua param siap (hanya butuh branchID terisi untuk kasir)
     if (role === "kasir") {
-      if (!selectedBranchId || !selectedKasirId) return;
+      if (!selectedBranchId) return;
     }
 
     loadTransactions();

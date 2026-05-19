@@ -68,7 +68,7 @@ export const getTransactionSummary = async (): Promise<
     return data.data;
   } catch (error) {
     console.error("Error fetching transaction summary:", error);
-    return error;
+    return null;
   }
 };
 
@@ -130,7 +130,7 @@ export const getIncomeByBranch = async (): Promise<BranchIncome[] | any> => {
     return data;
   } catch (error) {
     console.error("Error fetching income by branch:", error);
-    return error;
+    return [];
   }
 };
 
@@ -164,7 +164,7 @@ export const getReport = async (
     return data;
   } catch (error) {
     console.error("Error fetching chart last 7 days:", error);
-    return error;
+    return [];
   }
 };
 
@@ -192,7 +192,7 @@ export const getTransactionsReport = async (
     return data;
   } catch (error) {
     console.error("Error fetching chart", error);
-    return error;
+    return [];
   }
 };
 

@@ -122,6 +122,26 @@ const TransactionHistory: React.FC = () => {
     return "Filter Tanggal";
   };
 
+  const isPaketTransaction = (item: any): boolean => {
+    if (!item.products || !Array.isArray(item.products)) return false;
+    return item.products.some(
+      (p: any) =>
+        p.product_name?.toLowerCase().includes("paket") ||
+        p.category_name?.toLowerCase() === "paket"
+    );
+  };
+
+  const sortedTransactions = useMemo(() => {
+    if (!transactions) return [];
+    return [...transactions].sort((a, b) => {
+      const aIsPaket = isPaketTransaction(a);
+      const bIsPaket = isPaketTransaction(b);
+      if (aIsPaket && !bIsPaket) return -1;
+      if (!aIsPaket && bIsPaket) return 1;
+      return 0;
+    });
+  }, [transactions]);
+
   // === Loading section
   if (isLoading) {
     return <LoadingScreen />;
@@ -151,7 +171,7 @@ const TransactionHistory: React.FC = () => {
           </IonHeader>
           <IonContent className="ion-padding">
             <TransactionList
-              data={transactions}
+              data={sortedTransactions}
               onClickItem={(code) => setSelectedTransactionCode(code)}
               onReload={reload}
             />

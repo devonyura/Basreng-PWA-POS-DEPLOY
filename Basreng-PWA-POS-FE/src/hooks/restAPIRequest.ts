@@ -142,6 +142,8 @@ export const checkOKResponse = (response: any) => {
 	if (!response.ok) {
 		if (response.status === 401) {
 			console.error("Unauthorized! Token mungkin sudah expired/salah.")
+			Cookies.remove("token");
+			window.location.href = "/login";
 		}
 		throw new Error(`HTTP error! Status: ${response.status}`)
 	}
@@ -368,7 +370,7 @@ export const getTransactionHistory = async (filter: TransactionFilter = {}) => {
 
 	} catch (error) {
 		console.error("Error Fetching transactions", error);
-		return error;
+		throw error;
 	}
 };
 
@@ -406,7 +408,7 @@ export const findTransactionHistory = async (transactionCode: string) => {
 
 	} catch (error) {
 		console.error("Error Fetching transactions", error);
-		return error;
+		throw error;
 	}
 };
 

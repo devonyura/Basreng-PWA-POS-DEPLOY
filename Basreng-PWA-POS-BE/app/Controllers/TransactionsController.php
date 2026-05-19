@@ -179,7 +179,7 @@ class TransactionsController extends ResourceController
 
       $db = \Config\Database::connect();
       $builder = $db->table('transactions');
-      $builder->select('transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time');
+      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time');
       $builder->join('users', 'users.id = transactions.user_id');
 
       // Ambil param username
@@ -221,16 +221,44 @@ class TransactionsController extends ResourceController
         return $this->failNotFound('Tidak ada data transaksi.');
       }
 
+      // Ambil all transaction IDs untuk query details
+      $transactionIds = array_column($results, 'id');
+
+      // Query all transaction details for these transactions
+      $details = $db->table('transaction_details td')
+        ->select('td.transaction_id, p.name AS product_name, p.descriptions AS product_description, c.name AS category_name, td.quantity, td.price, td.subtotal')
+        ->join('product_variants pv', 'pv.id = td.product_variant_id', 'left')
+        ->join('products p', 'p.id = pv.product_id', 'left')
+        ->join('categories c', 'c.id = p.category_id', 'left')
+        ->whereIn('td.transaction_id', $transactionIds)
+        ->get()
+        ->getResultArray();
+
+      // Group details by transaction_id
+      $detailsByTransaction = [];
+      foreach ($details as $detail) {
+        $detailsByTransaction[$detail['transaction_id']][] = [
+          'product_name' => $detail['product_name'],
+          'category_name' => $detail['category_name'],
+          'product_description' => $detail['product_description'],
+          'quantity' => (int)$detail['quantity'],
+          'price' => (int)$detail['price'],
+          'subtotal' => (int)$detail['subtotal'],
+        ];
+      }
+
       // Format hasil untuk ambil date dan time dari kolom date_time
       $formatted = [];
       foreach ($results as $row) {
         $dateTime = new \DateTime($row['date_time']);
+        $rowDetails = $detailsByTransaction[$row['id']] ?? [];
         $formatted[] = [
           'transaction_code' => $row['transaction_code'],
           'kasir'            => $row['kasir'],
           'date'             => $dateTime->format('Y-m-d'),
           'time'             => $dateTime->format('H:i'),
           'total_price'      => $row['total_price'],
+          'products'         => $rowDetails,
         ];
       }
 

@@ -346,6 +346,28 @@ class ReportController extends ResourceController
       ->get()->getRow()->id ?? 0;
 
     // =========================
+    // MINGGU INI (7 Hari Terakhir)
+    // =========================
+    $builderMinggu = $db->table('transactions t');
+    if ($filterByBranch) {
+      $builderMinggu->where('t.branch_id', $user['branch_id']);
+    }
+    $builderMinggu->where("DATE(t.date_time) >=", date('Y-m-d', strtotime("-6 days")));
+    $builderMinggu->where("DATE(t.date_time) <=", date('Y-m-d'));
+    $mingguIni = $builderMinggu->selectSum('t.total_price')->get()->getRow()->total_price ?? 0;
+
+    // =========================
+    // BULAN INI (Bulan Berjalan)
+    // =========================
+    $builderBulan = $db->table('transactions t');
+    if ($filterByBranch) {
+      $builderBulan->where('t.branch_id', $user['branch_id']);
+    }
+    $builderBulan->where("MONTH(t.date_time)", date('m'));
+    $builderBulan->where("YEAR(t.date_time)", date('Y'));
+    $bulanIni = $builderBulan->selectSum('t.total_price')->get()->getRow()->total_price ?? 0;
+
+    // =========================
     // 🔥 NEW: PAYMENT SUMMARY
     // =========================
     $paymentQuery = $createBuilder()
@@ -369,6 +391,8 @@ class ReportController extends ResourceController
     return [
       'total_sales' => (int)$totalSales,
       'total_transactions' => (int)$totalTransactions,
+      'minggu_ini' => (int)$mingguIni,
+      'bulan_ini' => (int)$bulanIni,
 
       // 🔥 tambahan baru
       'payment_summary' => $paymentSummary
@@ -408,7 +432,7 @@ class ReportController extends ResourceController
         'data' => $data
       ]);
     } catch (\Exception $e) {
-      return $this->failServerError($e->getMessage());
+      return $this->failUnauthorized($e->getMessage());
     }
   }
 

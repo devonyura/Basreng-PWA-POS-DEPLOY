@@ -395,7 +395,7 @@ const Dashboard: React.FC = () => {
                           <IonSpinner name="lines-small" />
                         ) : topSellingProduct.length > 0 ? (
                           <div style={{ width: "100%", height: 250 }}>
-                            <ResponsiveContainer>
+                            <ResponsiveContainer minWidth={1} minHeight={1}>
                               <PieChart>
                                 <Pie
                                   data={topSellingProduct}
@@ -440,7 +440,7 @@ const Dashboard: React.FC = () => {
                         )}
 
                         {!loadingChart && !errorChart && (
-                          <ResponsiveContainer width="100%" height={300}>
+                          <ResponsiveContainer width="100%" height={300} minWidth={1}>
                             <BarChart data={chartData}>
                               <CartesianGrid
                                 stroke="#ccc"
@@ -462,10 +462,8 @@ const Dashboard: React.FC = () => {
                                 }
                               />
                               <Bar
-                                type="monotone"
                                 dataKey="total_sales"
-                                stroke="#3880ff"
-                                strokeWidth={2}
+                                fill="#3880ff"
                               />
                             </BarChart>
                           </ResponsiveContainer>
