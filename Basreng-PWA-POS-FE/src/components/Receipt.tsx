@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuthCookie";
 import { Reseller } from "../hooks/restAPIResellers";
 import "./Receipt.css";
 import { CartItem } from "../../src/redux/cartSlice";
+import { isPackageItem, parsePackageDescriptions } from "../utils/receiptItems";
 
 interface ReceiptProps {
   cash: number;
@@ -92,30 +93,43 @@ const Receipt = React.forwardRef<HTMLDivElement, ReceiptProps>((props, ref) => {
           </tr>
         </thead>
         <tbody>
-          {cartItems.map((item, index) => (
-            <React.Fragment key={`${item.variant_id}-${index}`}>
-              <tr>
-                <td colSpan={4} style={{ fontWeight: "bold" }}>
-                  {formatProductName(item.name, item.weight_grams)}
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={3} style={{ paddingLeft: "15px", color: "#666" }}>
-                  {item.quantity}x {rupiahFormat(item.price)}
-                </td>
-                <td style={{ textAlign: "right" }}>
-                  {rupiahFormat(item.price * item.quantity)}
-                </td>
-              </tr>
-              {item.descriptions && (
+          {cartItems.map((item, index) => {
+            const packageDescriptions = isPackageItem(item)
+              ? parsePackageDescriptions(item.descriptions)
+              : [];
+
+            return (
+              <React.Fragment key={`${item.variant_id}-${index}`}>
                 <tr>
-                  <td colSpan={4} style={{ paddingLeft: "15px", fontStyle: "italic", fontSize: "0.8rem", color: "#555" }}>
-                    Isi paket: {item.descriptions}
+                  <td colSpan={4} style={{ fontWeight: "bold" }}>
+                    {formatProductName(item.name, item.weight_grams)}
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+                <tr>
+                  <td colSpan={3} style={{ paddingLeft: "15px", color: "#666" }}>
+                    {item.quantity}x {rupiahFormat(item.price)}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {rupiahFormat(item.price * item.quantity)}
+                  </td>
+                </tr>
+                {packageDescriptions.length > 0 && (
+                  <tr>
+                    <td colSpan={4} className="receipt-package-list">
+                      <div>Isi paket:</div>
+                      <ul>
+                        {packageDescriptions.map((description, descriptionIndex) => (
+                          <li key={`${item.variant_id}-desc-${descriptionIndex}`}>
+                            {description}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
           <tr>
             <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
           </tr>

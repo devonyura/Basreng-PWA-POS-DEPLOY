@@ -402,6 +402,8 @@ class TransactionsController extends ResourceController
         transaction_details.price,
         transaction_details.subtotal,
         products.name AS product_name,
+        products.descriptions,
+        categories.name AS category_name,
         product_variants.weight_grams
         ');
 
@@ -415,6 +417,12 @@ class TransactionsController extends ResourceController
         'products',
         'products.id = product_variants.product_id',
         'left' // 🔥 WAJIB
+      );
+
+      $builderDetail->join(
+        'categories',
+        'categories.id = products.category_id',
+        'left'
       );
 
       $resellerData = null;

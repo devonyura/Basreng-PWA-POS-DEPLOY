@@ -45,7 +45,6 @@ import {
   parseWeightGrams,
   formatDateTimeLocal,
 } from "../../hooks/formatting";
-import { compressImage } from "../../hooks/imageCompression";
 import React from "react";
 
 // ALL child components imports
@@ -57,6 +56,7 @@ import ShopeeOrderSection from "../../components/checkout/ShopeeOrderSection";
 import CashPaymentSection from "../../components/checkout/CashPaymentSection";
 import PaymentMethodSection from "../../components/checkout/PaymentMethodSection";
 import CheckoutButton from "../../components/checkout/CheckoutButton";
+import PaymentProofCapture from "../../components/checkout/PaymentProofCapture";
 import TransactionHistoryDetail from "./TransactionHistoryDetail";
 
 const DetailOrder: React.FC = () => {
@@ -284,6 +284,10 @@ const DetailOrder: React.FC = () => {
       if (!checkForm("Alamat Pemesan", customerInfo.address)) return;
     }
 
+    if (isShopeeOrder && !checkForm("Nomor Pesanan Shopee", shopeeCode?.trim())) {
+      return;
+    }
+
     const formattedDateTime = formatDateTimeLocal();
 
     const cash_amounts = isCash ? total : (cashGiven ?? 0);
@@ -472,6 +476,7 @@ const DetailOrder: React.FC = () => {
         )}
         <IonFabButton
           id="open-detail-order"
+          disabled={cartItems.length === 0}
           onClick={() => {
             if (cartItems.length === 0) return;
 
@@ -514,8 +519,12 @@ const DetailOrder: React.FC = () => {
                   id="online-check"
                   checked={isShopeeOrder}
                   onIonChange={(e) => {
-                    setIsShopeeOrder(e.detail.checked);
-                    setIsCash(e.detail.checked);
+                    const checked = e.detail.checked;
+                    setIsShopeeOrder(checked);
+                    setIsCash(checked);
+                    if (!checked) {
+                      setShopeeCode("");
+                    }
                   }}
                   disabled={isOnlineOrder}
                 >
@@ -552,51 +561,17 @@ const DetailOrder: React.FC = () => {
               />
               {(paymentMethod === "qris" ||
                 paymentMethod === "transfer_bank") && (
-                <IonItem>
-                  <div style={{ width: "100%" }}>
-                    <p>
-                      <b>Upload Bukti Pembayaran</b>
-                    </p>
-
-                    {!paymentProof && (
-                      <>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={async (e: any) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              try {
-                                setIsUploadingProof(true);
-                                const compressedFile =
-                                  await compressImage(file);
-                                setPaymentProof(compressedFile);
-                              } catch (err) {
-                                console.error("Compression error:", err);
-                                // Fallback to original if compression fails
-                                setPaymentProof(file);
-                              } finally {
-                                setIsUploadingProof(false);
-                              }
-                            }
-                          }}
-                        />
-                        {isUploadingProof && <p>Uploading...</p>}
-                      </>
-                    )}
-
-                    {paymentProof && (
-                      <div style={{ marginTop: "10px" }}>
-                        <img
-                          src={URL.createObjectURL(paymentProof)}
-                          alt="bukti"
-                          style={{ width: "100%", borderRadius: "8px" }}
-                        />
-                        <p style={{ color: "green" }}>Siap diUpload ✅</p>
-                      </div>
-                    )}
-                  </div>
-                </IonItem>
+                <PaymentProofCapture
+                  value={paymentProof}
+                  onChange={setPaymentProof}
+                  onCameraUnavailable={(message) =>
+                    setAlert({
+                      showAlert: true,
+                      header: "Kamera Tidak Tersedia",
+                      alertMesage: message,
+                    })
+                  }
+                />
               )}
               <CashPaymentSection
                 isCash={isCash}
@@ -702,6 +677,7 @@ const DetailOrder: React.FC = () => {
         <TransactionHistoryDetail
           transactionCode={transactionCode}
           isOpen={openReceiptDetail}
+          autoGenerateReceipt
           onDidDismiss={() => {
             setOpenReceiptDetail(false);
             resetInput();

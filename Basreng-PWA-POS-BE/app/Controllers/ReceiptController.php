@@ -85,6 +85,19 @@ class ReceiptController extends ResourceController
                 $totalText = $this->formatRupiah($item->subtotal);
                 $this->drawRow($img, $qtyText, $totalText, $y, $black, $width, $fSize['body'], 40);
                 $y += 30;
+
+                if ($this->isPackageItem($item) && !empty($item->descriptions)) {
+                    $packageDescriptions = $this->parsePackageDescriptions($item->descriptions);
+                    if (!empty($packageDescriptions)) {
+                        $this->drawText($img, "Isi paket:", 40, $y, $black, $fSize['small']);
+                        $y += $fSize['small'] + 6;
+                        foreach ($packageDescriptions as $description) {
+                            $descriptionText = "- " . $description;
+                            $this->drawWrappedText($img, $descriptionText, 55, $y, $black, $fSize['small'], $maxWidth - 35);
+                        }
+                        $y += 4;
+                    }
+                }
             }
             $this->drawDashedLine($img, 0, $y, $width, $black);
             $y += 20;
@@ -99,9 +112,11 @@ class ReceiptController extends ResourceController
             }
             $this->drawDashedLine($img, 0, $y, $width, $black); $y += 20;
             $this->drawRow($img, "TOTAL", $this->formatRupiah($trx->total_price), $y, $black, $width, $fSize['total']); $y += 40;
-            $this->drawDashedLine($img, 0, $y, $width, $black); $y += 20;
-            $this->drawRow($img, "Tunai", $this->formatRupiah($trx->cash_amount), $y, $black, $width, $fSize['body']); $y += 25;
-            $this->drawRow($img, "Kembalian", $this->formatRupiah($trx->change_amount), $y, $black, $width, $fSize['body']); $y += 30;
+            if ($this->shouldRenderCashChangeBlock($trx->payment_method ?? null)) {
+                $this->drawDashedLine($img, 0, $y, $width, $black); $y += 20;
+                $this->drawRow($img, "Tunai", $this->formatRupiah($trx->cash_amount), $y, $black, $width, $fSize['body']); $y += 25;
+                $this->drawRow($img, "Kembalian", $this->formatRupiah($trx->change_amount), $y, $black, $width, $fSize['body']); $y += 30;
+            }
 
             // --- KONDISIONAL: RESELLER ---
             if ($reseller && !empty($reseller->name)) {
@@ -221,6 +236,29 @@ class ReceiptController extends ResourceController
 
     private function formatRupiah($val) {
         return "Rp " . number_format($val, 0, ',', '.');
+    }
+
+    private function shouldRenderCashChangeBlock($paymentMethod) {
+        return strtolower((string) $paymentMethod) === 'cash';
+    }
+
+    private function isPackageItem($item) {
+        $categoryName = strtolower((string) ($item->category_name ?? ''));
+        return strpos($categoryName, 'paket') !== false;
+    }
+
+    private function parsePackageDescriptions($descriptions) {
+        $parts = explode(',', (string) $descriptions);
+        $items = [];
+
+        foreach ($parts as $part) {
+            $trimmed = trim($part);
+            if ($trimmed !== '') {
+                $items[] = $trimmed;
+            }
+        }
+
+        return $items;
     }
 
     private function formatProductName($name, $weight) {

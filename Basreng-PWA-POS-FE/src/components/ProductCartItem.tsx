@@ -1,19 +1,15 @@
 import React from "react";
-import {
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButton,
-  IonIcon,
-  IonItem,
-} from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 
 import { add, remove, trashBin } from "ionicons/icons";
 
 import { rupiahFormat, formatProductName } from "../hooks/formatting";
+import { FILE_BASE_URL } from "../hooks/restAPIRequest";
 
 import { useDispatch } from "react-redux";
 import { updateQty, removeFromCart, CartItem } from "../redux/cartSlice";
+import { isPackageItem, parsePackageDescriptions } from "../utils/receiptItems";
+import "./ProductCartItem.css";
 
 interface ProductCartItemProps {
   item: CartItem;
@@ -44,49 +40,74 @@ const ProductCartItem: React.FC<ProductCartItemProps> = ({ item }) => {
     dispatch(removeFromCart(item.variant_id));
   };
 
+  const imageSrc = item.img ? `${FILE_BASE_URL}/${item.img}` : "/icon.png";
+  const packageDescriptions = isPackageItem(item)
+    ? parsePackageDescriptions(item.descriptions)
+    : [];
+
   return (
-    <IonItem>
-      <IonGrid>
-        <IonRow>
-          <IonCol size="9">
-            <div className="amount title">
-              <b>{formatProductName(item.name, item.weight_grams)}</b>
-            </div>
+    <div className="cart-item-card">
+      <img
+        className="cart-item-image"
+        src={imageSrc}
+        alt={item.name}
+        loading="lazy"
+        onError={(event) => {
+          event.currentTarget.src = "/icon.png";
+        }}
+      />
 
-            <div className="amount subtotal">
-              <p>
-                Subtotal : <b>{rupiahFormat(item.subtotal)}</b>
-              </p>
-            </div>
+      <div className="cart-item-main">
+        <div className="cart-item-top">
+          <div className="cart-item-text">
+            <b className="cart-item-title">
+              {formatProductName(item.name, item.weight_grams)}
+            </b>
+            <span className="cart-item-price">{rupiahFormat(item.price)}</span>
+          </div>
 
-            <div className="amount">
-              <p>Qty:</p>
+          <IonButton
+            className="cart-item-trash"
+            fill="clear"
+            color="danger"
+            size="small"
+            aria-label="Hapus item"
+            onClick={handleReset}
+          >
+            <IonIcon slot="icon-only" icon={trashBin}></IonIcon>
+          </IonButton>
+        </div>
 
-              <IonButton shape="round" size="default" onClick={handleRemove}>
-                <IonIcon slot="icon-only" icon={remove}></IonIcon>
-              </IonButton>
+        {packageDescriptions.length > 0 && (
+          <div className="cart-item-package">
+            <span>Isi paket:</span>
+            <ul>
+              {packageDescriptions.map((description, index) => (
+                <li key={`${item.variant_id}-package-${index}`}>
+                  {description}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-              <span>{item.quantity}</span>
-
-              <IonButton shape="round" size="default" onClick={handleAdd}>
-                <IonIcon slot="icon-only" icon={add}></IonIcon>
-              </IonButton>
-            </div>
-          </IonCol>
-
-          <IonCol class="col-trash" size="3">
-            <IonButton
-              shape="round"
-              color={"danger"}
-              size="default"
-              onClick={handleReset}
-            >
-              <IonIcon slot="icon-only" icon={trashBin}></IonIcon>
+        <div className="cart-item-bottom">
+          <div className="cart-item-qty">
+            <IonButton fill="clear" size="small" onClick={handleRemove}>
+              <IonIcon slot="icon-only" icon={remove}></IonIcon>
             </IonButton>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-    </IonItem>
+            <span>{item.quantity}</span>
+            <IonButton fill="clear" size="small" onClick={handleAdd}>
+              <IonIcon slot="icon-only" icon={add}></IonIcon>
+            </IonButton>
+          </div>
+
+          <strong className="cart-item-subtotal">
+            {rupiahFormat(item.subtotal)}
+          </strong>
+        </div>
+      </div>
+    </div>
   );
 };
 

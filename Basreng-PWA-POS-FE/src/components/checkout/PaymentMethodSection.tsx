@@ -25,12 +25,15 @@ const PaymentMethodSection: React.FC<Props> = ({
   isCash,
   setIsCash,
 }) => {
+  const showPaymentInstruction =
+    paymentMethod === "qris" || paymentMethod === "transfer_bank";
+
   return (
     <>
       <IonItem>
         <IonGrid>
           <IonRow>
-            <IonCol size="9" hidden={isShopeeOrder}>
+            <IonCol size={showPaymentInstruction ? "9" : "12"} hidden={isShopeeOrder}>
               <IonSelect
                 name="payment_method"
                 label="Pembayaran:"
@@ -44,17 +47,13 @@ const PaymentMethodSection: React.FC<Props> = ({
                 </IonSelectOption>
               </IonSelect>
             </IonCol>
-            <IonCol
-              className={`flex-center qr-method ${
-                paymentMethod === "qris" || paymentMethod === "transfer_bank"
-                  ? ""
-                  : "hidden-button"
-              }`}
-            >
-              <IonButton id="open-payment-method" expand="full">
-                {paymentMethod === "qris" ? "QR" : "TF"}
-              </IonButton>
-            </IonCol>
+            {showPaymentInstruction && (
+              <IonCol className="flex-center qr-method">
+                <IonButton id="open-payment-method" expand="full">
+                  {paymentMethod === "qris" ? "QR" : "TF"}
+                </IonButton>
+              </IonCol>
+            )}
           </IonRow>
         </IonGrid>
       </IonItem>

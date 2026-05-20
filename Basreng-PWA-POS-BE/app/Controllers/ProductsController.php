@@ -68,6 +68,7 @@ class ProductsController extends ResourceController
         p.name,
         p.img,
         p.category_id,
+        c.name as category_name,
         p.descriptions,
 
         pv.id as variant_id,
@@ -78,6 +79,11 @@ class ProductsController extends ResourceController
     $builder->join(
       'product_variants pv',
       'pv.product_id = p.id',
+      'left'
+    );
+    $builder->join(
+      'categories c',
+      'c.id = p.category_id',
       'left'
     );
     $builder->where('pv.deleted_at', null);
@@ -102,6 +108,7 @@ class ProductsController extends ResourceController
           'img' => $row['img'],
           'descriptions' => $row['descriptions'],
           'category_id' => $row['category_id'],
+          'category_name' => $row['category_name'],
           'variants' => []
         ];
       }
