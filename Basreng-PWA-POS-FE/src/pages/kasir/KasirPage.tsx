@@ -83,7 +83,7 @@ const KasirPage: React.FC = () => {
       setSelectedCategory("1");
     }
     console.log(isAppLoading);
-  }, [productError, categoryError, selectedCategory]);
+  }, [productError, categoryError, selectedCategory, categories]);
 
   // No Internet Connection Alert
   const [isNoInternetOpen, setIsNoInternetOpen] = useState(false);

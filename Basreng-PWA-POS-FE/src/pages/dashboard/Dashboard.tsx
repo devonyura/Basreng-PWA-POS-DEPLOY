@@ -23,7 +23,8 @@ import {
   IonChip,
   IonSpinner,
   IonToast,
-  useIonViewWillEnter,
+  useIonViewDidEnter,
+  useIonViewDidLeave,
 } from "@ionic/react";
 import { statsChart, cashOutline, refresh } from "ionicons/icons";
 import {
@@ -76,6 +77,15 @@ export interface Summary {
 }
 
 const Dashboard: React.FC = () => {
+  const [isViewActive, setIsViewActive] = useState(true);
+
+  useIonViewDidEnter(() => {
+    setIsViewActive(true);
+  });
+
+  useIonViewDidLeave(() => {
+    setIsViewActive(false);
+  });
   
   const [summary, setSummary] = useState<Summary>();
 
@@ -363,7 +373,7 @@ const Dashboard: React.FC = () => {
                         <p style={{ color: "var(--ion-color-danger)", textAlign: 'center' }}>{errorChart}</p>
                       )}
 
-                      {!loadingChart && !errorChart && (
+                      {!loadingChart && !errorChart && isViewActive && (
                         <div style={{ width: "100%", height: 320 }}>
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
@@ -452,7 +462,7 @@ const Dashboard: React.FC = () => {
                         <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
                           <IonSpinner name="crescent" color="primary" />
                         </div>
-                      ) : topSellingProduct.length > 0 ? (
+                      ) : topSellingProduct.length > 0 && isViewActive ? (
                         <div style={{ width: "100%", height: 280 }}>
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>

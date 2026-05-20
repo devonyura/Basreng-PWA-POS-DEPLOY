@@ -1,26 +1,6 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
-import {
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButton,
-  IonIcon,
-  IonItem,
-  useIonViewWillEnter,
-  IonImg,
-} from "@ionic/react";
-import { add, remove, trashBin } from "ionicons/icons";
+import React from "react";
 import { rupiahFormat, formatProductName } from "../hooks/formatting";
-import { getBranch } from "../hooks/restAPIRequest";
-import { useAuth } from "../hooks/useAuthCookie";
 import "./Receipt.css";
-import { textAlign } from "html2canvas/dist/types/css/property-descriptors/text-align";
 import { Reseller } from "../pages/kasir/TransactionHistoryDetail";
 
 interface ReceiptHistoryProps {
@@ -57,8 +37,6 @@ interface ReceiptHistoryProps {
   reseller: Reseller | undefined;
 }
 
-
-
 const ReceiptHistory = React.forwardRef<HTMLDivElement, ReceiptHistoryProps>(
   (props, ref) => {
     const {
@@ -81,175 +59,193 @@ const ReceiptHistory = React.forwardRef<HTMLDivElement, ReceiptHistoryProps>(
       reseller,
     } = props;
 
-    // const [branchData, setBranchData] = useState<BranchData | null>(null);
-
-    // useEffect(() => {
-    //   const fetchBranch = async () => {
-    //     if (!props.branch_id) return;
-
-    //     try {
-    //       const res = await getBranch(Number(props.branch_id));
-    //       setBranchData(res.data);
-    //     } catch (err) {
-    //       console.error("Gagal ambil Branch:", err);
-    //     }
-    //   };
-
-    //   fetchBranch();
-    // }, [props.branch_id]);
-
-    const phone = reseller?.phone.slice(
-      reseller?.phone.length - 4,
-      reseller?.phone.length,
-    );
+    const formatDate = (dateString?: string) => {
+      const d = dateString ? new Date(dateString) : new Date();
+      if (isNaN(d.getTime())) return "-";
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      return `${day}/${month}/${year} ${hours}:${minutes}`;
+    };
 
     return (
       <div className="receipt-container" ref={ref}>
-        <IonImg src="/logo-struk.png" className="struk-logo-preview" alt="App Logo" />
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "15px" }}>
+          <img src="/logo-struk.png" style={{ width: "230px", height: "auto" }} alt="App Logo" />
+        </div>
         <table className="receipt">
           <thead>
             <tr className="receipt-title">
-              <th colSpan={4}>- BASRENG GHOSTING {branch_name} -</th>
-            </tr>
-            <tr className="receipt-title">
-              <th colSpan={4}>
-                {branch_address ? `- ${branch_address} -` : "- Jalan ? -"}
+              <th colSpan={4} style={{ textAlign: "center", fontWeight: "normal", textTransform: "none" }}>
+                {branch_address || "Alamat Toko"}
               </th>
             </tr>
             <tr>
-              <th colSpan={4}>
-                <span></span>
-              </th>
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
             </tr>
             <tr>
-              <th className="small-text" colSpan={3}>
-                NO: {receiptNoteNumber}
-              </th>
-              <th>Kasir: {username}</th>
+              <td colSpan={2}>No</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>{receiptNoteNumber}</td>
             </tr>
             <tr>
-              <th colSpan={4}>
-                <span></span>
-              </th>
+              <td colSpan={2}>Kasir</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>{username}</td>
             </tr>
-            {reseller && (
-              <tr>
-                <th className="small-text" colSpan={3}>
-                  Reseller: {reseller.name}
-                </th>
-                <th>no telp: 08XX XXXX {phone}</th>
-              </tr>
-            )}
+            <tr>
+              <td colSpan={2}>Tgl</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>{formatDate(date)}</td>
+            </tr>
+            <tr>
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+            </tr>
           </thead>
           <tbody>
-            {cartItems.map((item) => (
-              <React.Fragment key={item.variant_id}>
+            {cartItems.map((item, index) => (
+              <React.Fragment key={`${item.variant_id}-${index}`}>
                 <tr>
-                  <td>{formatProductName(item.name, item.weight_grams)}</td>
-                  <td className="small-text">{item.quantity}x</td>
-                  <td>{rupiahFormat(item.price, false)}</td>
-                  <td>{rupiahFormat(item.subtotal, false)}</td>
+                  <td colSpan={4} style={{ fontWeight: "bold" }}>
+                    {formatProductName(item.name, item.weight_grams)}
+                  </td>
                 </tr>
-
+                <tr>
+                  <td colSpan={3} style={{ paddingLeft: "15px", color: "#666" }}>
+                    {item.quantity}x {rupiahFormat(item.price)}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {rupiahFormat(item.subtotal)}
+                  </td>
+                </tr>
                 {item.descriptions && (
                   <tr>
-                    <td>Isi paket</td>
-                    <td colSpan={3}>{item.descriptions}</td>
+                    <td colSpan={4} style={{ paddingLeft: "15px", fontStyle: "italic", fontSize: "0.8rem", color: "#555" }}>
+                      Isi paket: {item.descriptions}
+                    </td>
                   </tr>
                 )}
               </React.Fragment>
             ))}
-
             <tr>
-              <td className="tr-title" colSpan={3}>
-                Pembayaran
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+            </tr>
+            <tr>
+              <td colSpan={2}>Pembayaran</td>
+              <td colSpan={2} style={{ textAlign: "right", fontWeight: "bold" }}>
+                {paymentMethod?.toUpperCase()}
               </td>
-              <td className="tr-title">{paymentMethod}</td>
             </tr>
-            <tr>
-              <td className="tr-title" colSpan={3}>
-                Total
-              </td>
-              <td className="tr-title">{rupiahFormat(total, false)}</td>
-            </tr>
-
-            <tr>
-              <td colSpan={3}>Tunai</td>
-              <td>{rupiahFormat(cash, false)}</td>
-            </tr>
-
-            <tr>
-              <td colSpan={3}>Kembalian</td>
-              <td>{rupiahFormat(change, false)}</td>
-            </tr>
-
-            {isOnlineOrders && (
+            {isShopeeOrder && shopeeCode && (
               <>
-                <tr className="online-order-receipt tr-title ">
-                  <td colSpan={3} className="tr-title">
-                    Pemesan
-                  </td>
-                  <td>{customerInfo.name}</td>
-                </tr>
                 <tr>
-                  <td colSpan={3} className="tr-title">
-                    No WA/HP
-                  </td>
-                  <td>{customerInfo.phone}</td>
+                  <td colSpan={4}>Shopee Code:</td>
                 </tr>
-                <tr>
-                  <td colSpan={4} className="text-left tr-title">
-                    Alamat:
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={4} className="text-left">
-                    {customerInfo.address}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={4} className="text-left tr-title">
-                    Catatan Tambahan:
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={4} className="text-left">
-                    {customerInfo.notes}
+                <tr className="shopee-code">
+                  <td colSpan={4} style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.2rem" }}>
+                    {shopeeCode}
                   </td>
                 </tr>
               </>
             )}
+            <tr>
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+            </tr>
+            <tr style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
+              <td colSpan={2}>TOTAL</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>
+                {rupiahFormat(total)}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+            </tr>
+            <tr>
+              <td colSpan={2}>Tunai</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>
+                {rupiahFormat(cash)}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={2}>Kembalian</td>
+              <td colSpan={2} style={{ textAlign: "right" }}>
+                {rupiahFormat(change)}
+              </td>
+            </tr>
+
+            {/* KONDISIONAL: RESELLER */}
+            {is_reseller && reseller && (
+              <>
+                <tr>
+                  <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+                </tr>
+                <tr>
+                  <td colSpan={4} style={{ fontWeight: "bold" }}>RESELLER</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>Nama</td>
+                  <td colSpan={2} style={{ textAlign: "right" }}>{reseller.name}</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>HP</td>
+                  <td colSpan={2} style={{ textAlign: "right" }}>{reseller.phone || "-"}</td>
+                </tr>
+                <tr>
+                  <td colSpan={4}>Alamat:</td>
+                </tr>
+                <tr style={{ textTransform: "none" }}>
+                  <td colSpan={4} style={{ paddingLeft: "15px" }}>{reseller.address || "-"}</td>
+                </tr>
+              </>
+            )}
+
+            {/* KONDISIONAL: PEMESAN */}
+            {isOnlineOrders && (
+              <>
+                <tr>
+                  <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "4px 0" }}></td>
+                </tr>
+                <tr>
+                  <td colSpan={4} style={{ fontWeight: "bold" }}>PEMESAN</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>Nama</td>
+                  <td colSpan={2} style={{ textAlign: "right" }}>{customerInfo.name || "-"}</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>HP</td>
+                  <td colSpan={2} style={{ textAlign: "right" }}>{customerInfo.phone || "-"}</td>
+                </tr>
+                <tr>
+                  <td colSpan={4}>Alamat:</td>
+                </tr>
+                <tr style={{ textTransform: "none" }}>
+                  <td colSpan={4} style={{ paddingLeft: "15px" }}>{customerInfo.address || "-"}</td>
+                </tr>
+                {customerInfo.notes && (
+                  <>
+                    <tr>
+                      <td colSpan={4}>Catatan:</td>
+                    </tr>
+                    <tr style={{ textTransform: "none" }}>
+                      <td colSpan={4} style={{ paddingLeft: "15px" }}>{customerInfo.notes}</td>
+                    </tr>
+                  </>
+                )}
+              </>
+            )}
           </tbody>
           <tfoot>
-            {isShopeeOrder && (
-              <tr className="shopee-code">
-                <td colSpan={4}>
-                  <span>{shopeeCode}</span>
-                </td>
-              </tr>
-            )}
             <tr>
-              <td colSpan={3}>
-                Tgl. {date ?? new Date().toLocaleDateString("id-ID")}
-              </td>
-              <td>Cabang: {branch_name}</td>
+              <td colSpan={4} style={{ borderTop: "1px dashed black", padding: "10px 0 4px 0" }}></td>
             </tr>
             <tr>
-              <td colSpan={4} className="info">
-                <p>- Menjual Berbagai cemilan pedas -</p>
-                <p>- mochi & sushi -</p>
-                <p>Selamat Menikmati :) </p>
-                <p>PESANAN SUDAH DISTRUK TIDAK DAPAT DIKEMBALIKAN</p>
+              <td colSpan={4} style={{ textAlign: "center", fontWeight: "bold" }}>
+                Selamat Menikmati :)
               </td>
             </tr>
             <tr>
-              <td colSpan={4}>
-                <p>
-                  <i>BASRENG POS v.1.1</i>
-                </p>
-                <p>
-                  <i>App by Devon Yura Interactive Software House</i>
-                </p>
+              <td colSpan={4} style={{ textAlign: "center", fontSize: "0.75rem", color: "#777", paddingTop: "5px" }}>
+                BASRENG POS v1.1
               </td>
             </tr>
           </tfoot>

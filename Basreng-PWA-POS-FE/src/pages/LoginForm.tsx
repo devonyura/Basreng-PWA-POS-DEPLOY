@@ -144,7 +144,7 @@ const LoginForm: React.FC = () => {
           <IonTitle>Basreng POS</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent className="ion-padding login-content">
         <IonImg src="/icon.png" className="app-logo" alt="App Logo" />
         {isTokenExpired ? (
           <IonToast

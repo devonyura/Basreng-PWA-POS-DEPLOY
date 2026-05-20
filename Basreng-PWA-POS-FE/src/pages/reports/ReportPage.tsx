@@ -17,6 +17,8 @@ import {
   IonBackButton,
   IonButtons,
   IonIcon,
+  useIonViewDidEnter,
+  useIonViewDidLeave,
 } from "@ionic/react";
 import { useState, useRef } from "react";
 import jsPDF from "jspdf";
@@ -45,6 +47,15 @@ interface GenerateReportReturn {
 }
 
 const ReportPage: React.FC = () => {
+  const [isViewActive, setIsViewActive] = useState(true);
+
+  useIonViewDidEnter(() => {
+    setIsViewActive(true);
+  });
+
+  useIonViewDidLeave(() => {
+    setIsViewActive(false);
+  });
   // ======================
   // State Management
   // ======================
@@ -300,14 +311,16 @@ const ReportPage: React.FC = () => {
         </IonAccordionGroup>
 
         {/* Chart Preview */}
-        <ChartRenderer
-          ref={chartRef}
-          chartData={reportData?.chart}
-          summary={reportData?.summary}
-          branches={reportData?.branches}
-          setWidth={isChartWidth}
-          isDayReport={reportData?.type === "daily"}
-        />
+        {isViewActive && (
+          <ChartRenderer
+            ref={chartRef}
+            chartData={reportData?.chart}
+            summary={reportData?.summary}
+            branches={reportData?.branches}
+            setWidth={isChartWidth}
+            isDayReport={reportData?.type === "daily"}
+          />
+        )}
 
         {/* Loading Indicator */}
         <IonLoading

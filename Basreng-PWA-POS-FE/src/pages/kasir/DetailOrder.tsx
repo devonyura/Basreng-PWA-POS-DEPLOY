@@ -585,6 +585,7 @@ const DetailOrder: React.FC = () => {
             receiptNoteNumber={transactionCode || "0"}
             discount={discount}
             is_reseller={isReseller}
+            reseller={resellers.find(r => r.id !== undefined && Number(r.id) === Number(selectedResellerId))}
             isShopeeOrder={isShopeeOrder}
             shopeeCode={shopeeCode}
             paymentMethod={paymentMethod}

@@ -1,6 +1,6 @@
 /* Premium Login Page Styling */
 
-ion-content.ion-padding {
+ion-content.login-content {
   --background: linear-gradient(135deg, #4f7389 0%, #586e79 50%, #2c3b47 100%) !important;
   display: flex;
   align-items: center;

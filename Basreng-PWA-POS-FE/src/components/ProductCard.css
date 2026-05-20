@@ -153,3 +153,102 @@ ion-card-content {
   border-top: 1px solid rgba(233, 226, 216, 0.6);
   padding-top: 8px;
 }
+
+/* Mobile Overrides (Optimized Compact View for Phone/PWA) */
+@media (max-width: 576px) {
+  .product-img-container {
+    height: 90px;
+  }
+  
+  .product-img {
+    height: 90px;
+  }
+  
+  ion-card-content {
+    padding: 8px !important;
+  }
+  
+  .product-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  
+  .product-description {
+    margin: 0 0 6px 0;
+    padding-left: 0;
+    list-style: none;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .product-description li {
+    background: var(--color-warm-cream);
+    color: var(--color-slate-blue);
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-bottom: 0;
+    font-weight: 500;
+  }
+
+  .variant-row {
+    padding: 4px 0;
+    gap: 4px;
+  }
+
+  .variant-info {
+    gap: 0;
+  }
+
+  .variant-weight {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .variant-price {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .variant-action ion-button {
+    height: 24px;
+    min-height: 24px;
+    font-size: 0.75rem;
+    --padding-start: 6px;
+    --padding-end: 6px;
+  }
+
+  .qty-control {
+    padding: 1px;
+    gap: 2px;
+    border-radius: 6px;
+  }
+
+  .qty-control ion-button {
+    height: 22px;
+    min-height: 22px;
+    --padding-start: 4px;
+    --padding-end: 4px;
+    font-size: 0.75rem;
+  }
+
+  .qty-control ion-button[color="danger"] {
+    --padding-start: 3px;
+    --padding-end: 3px;
+  }
+
+  .qty {
+    font-size: 0.75rem;
+    min-width: 16px;
+  }
+
+  .subtotal {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    padding-top: 4px;
+  }
+}
