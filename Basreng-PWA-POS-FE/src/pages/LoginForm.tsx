@@ -104,11 +104,23 @@ const LoginForm: React.FC = () => {
       const result = await loginRequest(authData);
 
       if (result.success) {
-        const token = result.data.token;
-        login(token);
-        setIsTokenExpired(false);
-        history.push("/dashboard");
-      } else {
+          const token = result.data.token;
+
+          // tutup alert loading
+          setAlert({
+            showAlert: false,
+            header: "",
+            alertMesage: "",
+            hideButton: false,
+          });
+
+          login(token);
+          setIsTokenExpired(false);
+
+          setTimeout(() => {
+            history.replace("/dashboard");
+          }, 100);
+        } else {
         setAlert({
           showAlert: true,
           header: "Gagal!",
