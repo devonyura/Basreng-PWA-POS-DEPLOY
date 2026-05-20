@@ -26,6 +26,7 @@ const AlertInfo: React.FC<AlertOkProps> = ({ isOpen, onDidDismiss, header = "Not
       header={header}
       message={message}
       buttons={button}
+      backdropDismiss={false}
     />
   );
 }

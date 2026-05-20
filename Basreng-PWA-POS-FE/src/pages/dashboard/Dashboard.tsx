@@ -178,9 +178,31 @@ const Dashboard: React.FC = () => {
 
   const history = useHistory();
   const location = useLocation<LocationState>();
-  const [isTokenExpired, setIsTokenExpired] = useState(
-    location.state?.isTokenExpired || false,
-  );
+  // const [isTokenExpired, setIsTokenExpired] = useState(
+  //   location.state?.isTokenExpired || false,
+  // );
+  useEffect(() => {
+  if (location.state?.isTokenExpired) {
+    // beri delay kecil agar page & overlay selesai render
+    const timer = setTimeout(() => {
+      setAlert({
+        showAlert: true,
+        header: "Info",
+        alertMesage: "Kamu sudah login!",
+        hideButton: false,
+      });
+
+      // reset state supaya tidak muncul lagi saat refresh
+      history.replace({
+        ...location,
+        state: {},
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }
+}, [location.state, history]);
+
   const [showLogoutAlert, setLogoutShowAlert] = useState(false);
 
   const COLORS = [
