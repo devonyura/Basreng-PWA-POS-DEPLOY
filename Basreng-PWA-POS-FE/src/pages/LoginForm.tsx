@@ -106,11 +106,6 @@ const LoginForm: React.FC = () => {
       if (result.success) {
         const token = result.data.token;
         login(token);
-        setAlert({
-          showAlert: false,
-          header: "",
-          alertMesage: "",
-        });
         setIsTokenExpired(false);
         history.push("/dashboard");
       } else {
