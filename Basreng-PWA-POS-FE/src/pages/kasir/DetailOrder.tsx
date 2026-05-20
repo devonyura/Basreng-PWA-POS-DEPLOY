@@ -213,6 +213,16 @@ const DetailOrder: React.FC = () => {
     }
   }, [cashGiven, total]);
 
+  useEffect(() => {
+    if (!isShopeeOrder) return;
+
+    setPaymentMethod("cash");
+    setIsCash(true);
+    setIsOnlineOrder(false);
+    setCashGiven(total);
+    setPaymentProof(null);
+  }, [isShopeeOrder, total]);
+
   // Effect to automatically populate/update default note for Maxim delivery
   useEffect(() => {
     const defaultNotesText = `Harga Barang: ${rupiahFormat(total)}\n`;
@@ -522,7 +532,11 @@ const DetailOrder: React.FC = () => {
                     const checked = e.detail.checked;
                     setIsShopeeOrder(checked);
                     setIsCash(checked);
-                    if (!checked) {
+                    if (checked) {
+                      setPaymentMethod("cash");
+                      setIsOnlineOrder(false);
+                      setPaymentProof(null);
+                    } else {
                       setShopeeCode("");
                     }
                   }}
@@ -541,12 +555,14 @@ const DetailOrder: React.FC = () => {
                   Antar Maxim?
                 </IonCheckbox>
               </IonItem>
-              <CustomerInfoForm
-                isOnlineOrder={isOnlineOrder}
-                customerInfo={customerInfo}
-                setCustomerInfo={setCustomerInfo}
-                copyCustomerInfoToClipboard={copyCustomerInfoToClipboard}
-              />
+              {!isShopeeOrder && (
+                <CustomerInfoForm
+                  isOnlineOrder={isOnlineOrder}
+                  customerInfo={customerInfo}
+                  setCustomerInfo={setCustomerInfo}
+                  copyCustomerInfoToClipboard={copyCustomerInfoToClipboard}
+                />
+              )}
               <ShopeeOrderSection
                 isShopeeOrder={isShopeeOrder}
                 shopeeCode={shopeeCode}
@@ -578,6 +594,7 @@ const DetailOrder: React.FC = () => {
                 cashGiven={cashGiven}
                 setCashGiven={setCashGiven}
                 change={change}
+                disabled={isShopeeOrder}
               />
             </IonList>
           </div>
@@ -604,6 +621,8 @@ const DetailOrder: React.FC = () => {
             onCheckout={() => setAlertBeforeSubmit(true)}
             paymentMethod={paymentMethod}
             paymentProof={paymentProof}
+            isShopeeOrder={isShopeeOrder}
+            shopeeCode={shopeeCode}
           />
           <div className="space"></div>
         </IonContent>

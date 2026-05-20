@@ -33,11 +33,12 @@ const PaymentMethodSection: React.FC<Props> = ({
       <IonItem>
         <IonGrid>
           <IonRow>
-            <IonCol size={showPaymentInstruction ? "9" : "12"} hidden={isShopeeOrder}>
+            <IonCol size={showPaymentInstruction && !isShopeeOrder ? "9" : "12"}>
               <IonSelect
                 name="payment_method"
                 label="Pembayaran:"
                 value={paymentMethod}
+                disabled={isShopeeOrder}
                 onIonChange={(e) => setPaymentMethod(e.detail.value)}
               >
                 <IonSelectOption value="cash">Cash</IonSelectOption>
@@ -47,7 +48,7 @@ const PaymentMethodSection: React.FC<Props> = ({
                 </IonSelectOption>
               </IonSelect>
             </IonCol>
-            {showPaymentInstruction && (
+            {showPaymentInstruction && !isShopeeOrder && (
               <IonCol className="flex-center qr-method">
                 <IonButton id="open-payment-method" expand="full">
                   {paymentMethod === "qris" ? "QR" : "TF"}
@@ -59,7 +60,7 @@ const PaymentMethodSection: React.FC<Props> = ({
       </IonItem>
       <IonItem disabled={isShopeeOrder}>
         <IonCheckbox
-          checked={isCash}
+          checked={isShopeeOrder ? true : isCash}
           onIonChange={(e) => setIsCash(e.detail.checked)}
         >
           Uang Pas

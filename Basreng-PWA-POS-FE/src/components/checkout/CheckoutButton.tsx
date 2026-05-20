@@ -8,6 +8,8 @@ interface Props {
   onCheckout: () => void;
   paymentMethod: string;
   paymentProof: File | null;
+  isShopeeOrder?: boolean;
+  shopeeCode?: string | null;
 }
 
 const CheckoutButton: React.FC<Props> = ({
@@ -16,11 +18,14 @@ const CheckoutButton: React.FC<Props> = ({
   onCheckout,
   paymentMethod,
   paymentProof,
+  isShopeeOrder = false,
+  shopeeCode,
 }) => {
   const isPaymentProofRequired =
     paymentMethod === "qris" || paymentMethod === "transfer_bank";
   const isDisabled =
     isSubmitting ||
+    (isShopeeOrder && !shopeeCode?.trim()) ||
     (paymentMethod === "cash" && (cashGiven === 0 || cashGiven === null)) ||
     (isPaymentProofRequired && !paymentProof);
   const buttonText = isDisabled ? "Lengkapi Data Transaksi" : "Selesaikan Transaksi";
