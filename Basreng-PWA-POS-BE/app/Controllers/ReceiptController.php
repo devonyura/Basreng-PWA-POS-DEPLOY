@@ -131,7 +131,8 @@ class ReceiptController extends ResourceController
             // --- FOOTER ---
             $y += 20; $this->drawDashedLine($img, 0, $y, $width, $black); $y += 30;
             $this->drawText($img, "Selamat Menikmati :)", $width / 2, $y, $black, $fSize['footer'], true); $y += 25;
-            $this->drawText($img, "BASRENG POS v1.1", $width / 2, $y, $black, $fSize['small'], true);
+            $this->drawText($img, "BASRENG POS v1.1", $width / 2, $y, $black, $fSize['small'], true); $y += 20;
+            $this->drawText($img, "Develop by @devonyura / Yura Production", $width / 2, $y, $black, 10, true);
 
             // --- FINAL CROP ---
             $finalHeight = $y + 40;
