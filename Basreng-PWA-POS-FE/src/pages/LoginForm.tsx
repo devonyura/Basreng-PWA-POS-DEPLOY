@@ -104,15 +104,15 @@ const LoginForm: React.FC = () => {
       const result = await loginRequest(authData);
 
       if (result.success) {
-        // const token = result.data.token;
-        // login(token);
-        // setAlert({
-        //   showAlert: true,
-        //   header: "Berhasil",
-        //   alertMesage: "Semoga dagangannya laris ya!.",
-        // });
-        // setIsTokenExpired(false);
-        // history.push("/dashboard");
+        const token = result.data.token;
+        login(token);
+        setAlert({
+          showAlert: false,
+          header: "",
+          alertMesage: "",
+        });
+        setIsTokenExpired(false);
+        history.push("/dashboard");
       } else {
         setAlert({
           showAlert: true,
