@@ -57,6 +57,12 @@ class PaymentProofController extends ResourceController
 
         $filePath = 'uploads/payment_proofs/' . $newName;
 
+        $baseUrl = (defined('ENVIRONMENT') && ENVIRONMENT === 'production')
+            ? 'https://api.basrenghosting.biz.id/'
+            : base_url();
+        $baseUrl = rtrim($baseUrl, '/') . '/';
+        $fileUrl = $baseUrl . $filePath;
+
         $model = new PaymentProofModel();
 
         // 🔥 BONUS: cek kalau sudah ada → replace (biar 1 transaksi 1 bukti)
@@ -73,7 +79,7 @@ class PaymentProofController extends ResourceController
             $model->update($existing['id'], [
                 'file_name' => $newName,
                 'file_path' => $filePath,
-                'file_url'  => base_url($filePath),
+                'file_url'  => $fileUrl,
             ]);
         } else {
             // insert baru
@@ -81,7 +87,7 @@ class PaymentProofController extends ResourceController
                 'transaction_code' => $transactionCode,
                 'file_name' => $newName,
                 'file_path' => $filePath,
-                'file_url' => base_url($filePath),
+                'file_url'  => $fileUrl,
             ]);
         }
 
@@ -89,7 +95,7 @@ class PaymentProofController extends ResourceController
             'status' => 'success',
             'message' => 'Bukti pembayaran berhasil diupload',
             'data' => [
-                'file_url' => base_url($filePath)
+                'file_url' => $fileUrl
             ]
         ]);
     }
