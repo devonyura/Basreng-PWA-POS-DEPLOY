@@ -38,7 +38,7 @@ const CustomerInfoForm: React.FC<Props> = ({
           type="text"
           placeholder="isi Nama Pemesan"
           value={customerInfo.name}
-          onIonChange={(e) =>
+          onIonInput={(e) =>
             setCustomerInfo({
               ...customerInfo,
               name: e.detail.value!,
@@ -52,7 +52,7 @@ const CustomerInfoForm: React.FC<Props> = ({
           type="text"
           placeholder="Nomor WA/HP Pemesan"
           value={customerInfo.phone}
-          onIonChange={(e) =>
+          onIonInput={(e) =>
             setCustomerInfo({
               ...customerInfo,
               phone: e.detail.value!,
@@ -66,7 +66,7 @@ const CustomerInfoForm: React.FC<Props> = ({
           labelPlacement="stacked"
           placeholder="Alamat Pemasan"
           value={customerInfo.address}
-          onIonChange={(e) =>
+          onIonInput={(e) =>
             setCustomerInfo({
               ...customerInfo,
               address: e.detail.value!,
@@ -80,7 +80,7 @@ const CustomerInfoForm: React.FC<Props> = ({
           placeholder="Catatan: contoh: Pesanan dibayar 50K"
           autoGrow={true}
           value={customerInfo.notes}
-          onIonChange={(e) =>
+          onIonInput={(e) =>
             setCustomerInfo({
               ...customerInfo,
               notes: e.detail.value!,

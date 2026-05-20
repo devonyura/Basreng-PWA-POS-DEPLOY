@@ -94,18 +94,91 @@ ion-modal ion-label {
 }
 
 .btn-checkout {
-  --background: var(--ion-color-primary);
-  --color: #ffffff;
+  --background: #2d8a4e !important; /* Vibrant success green when active */
+  --color: #ffffff !important;
+  color: #ffffff !important;
   --border-radius: 14px;
-  font-weight: 700;
-  height: 52px;
-  margin-top: 24px;
-  box-shadow: 0 8px 24px rgba(79, 115, 137, 0.25);
+  font-weight: 800 !important;
+  font-size: 1.15rem !important;
+  height: 56px;
+  margin: 24px 0 12px 0 !important;
+  box-shadow: 0 10px 25px rgba(45, 138, 78, 0.3) !important; /* Glowing green shadow */
   transition: var(--app-transition);
+}
+
+.btn-checkout::part(native) {
+  background: #2d8a4e !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
 }
 
 .btn-checkout::part(native):hover {
   filter: brightness(1.05);
+}
+
+.btn-checkout[disabled],
+.btn-checkout.button-disabled {
+  --background: #b4c2cd !important;
+  --color: #ffffff !important;
+  color: #ffffff !important;
+  opacity: 0.6;
+  box-shadow: none !important;
+}
+
+.btn-checkout[disabled]::part(native),
+.btn-checkout.button-disabled::part(native) {
+  background: #b4c2cd !important;
+  color: #ffffff !important;
+}
+
+/* High-contrast Order Summary Card */
+.order-summary-container {
+  background: #ffffff;
+  border: 1px solid rgba(91, 112, 131, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.95rem;
+}
+
+.summary-row .summary-label {
+  font-weight: 600;
+  color: #5b7083;
+}
+
+.summary-row .summary-value {
+  font-weight: 700;
+  color: #2c3b47;
+}
+
+.summary-row.discount-row .summary-value {
+  color: #e04f5f; /* Clean bright red for discount */
+}
+
+.summary-row.grand-total-row {
+  border-top: 1px dashed rgba(91, 112, 131, 0.2);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.summary-row.grand-total-row .summary-label {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #2c3b47;
+}
+
+.summary-row.grand-total-row .summary-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #4f7389; /* Premium slate blue */
 }
 
 .space {

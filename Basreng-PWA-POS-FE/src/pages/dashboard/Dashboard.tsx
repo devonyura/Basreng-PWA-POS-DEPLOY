@@ -215,27 +215,29 @@ const Dashboard: React.FC = () => {
               <IonButton onClick={fetchData}>
                 <IonIcon icon={refresh} />
               </IonButton>
-              <IonButton
-                onClick={async () => {
-                  const allProducts = await getTopSellingProduct("all");
+              {["owner", "admin", "manager"].includes(role ?? "") && (
+                <IonButton
+                  onClick={async () => {
+                    const allProducts = await getTopSellingProduct("all");
 
-                  generateDailyReport({
-                    summary: summary,
-                    branches: incomeByBranch,
-                    products: allProducts.map((item: any) => ({
-                      product_name: formatProductWithWeight(
-                        item.product_name || "-",
-                        item.weight_grams,
-                      ),
-                      total_sold: Number(item.total_sold || 0),
-                      total_sales: Number(item.total_sales || 0),
-                    })),
-                    date: formatDateLocal(),
-                  });
-                }}
-              >
-                Export PDF
-              </IonButton>
+                    generateDailyReport({
+                      summary: summary,
+                      branches: incomeByBranch,
+                      products: allProducts.map((item: any) => ({
+                        product_name: formatProductWithWeight(
+                          item.product_name || "-",
+                          item.weight_grams,
+                        ),
+                        total_sold: Number(item.total_sold || 0),
+                        total_sales: Number(item.total_sales || 0),
+                      })),
+                      date: formatDateLocal(),
+                    });
+                  }}
+                >
+                  Export PDF
+                </IonButton>
+              )}
             </IonButtons>
           </IonToolbar>
         </IonHeader>

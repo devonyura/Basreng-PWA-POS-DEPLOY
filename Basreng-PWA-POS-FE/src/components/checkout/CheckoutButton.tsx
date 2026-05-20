@@ -20,6 +20,7 @@ const CheckoutButton: React.FC<Props> = ({
   return (
     <IonButton
       expand="block"
+      className="btn-checkout"
       onClick={onCheckout}
       disabled={
         (paymentMethod === "cash" && (cashGiven === 0 || cashGiven === null)) ||

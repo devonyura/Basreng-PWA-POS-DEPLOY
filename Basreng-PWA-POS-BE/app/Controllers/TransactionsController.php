@@ -179,7 +179,7 @@ class TransactionsController extends ResourceController
 
       $db = \Config\Database::connect();
       $builder = $db->table('transactions');
-      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time');
+      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time, transactions.payment_method');
       $builder->join('users', 'users.id = transactions.user_id');
 
       // Ambil param username
@@ -258,6 +258,7 @@ class TransactionsController extends ResourceController
           'date'             => $dateTime->format('Y-m-d'),
           'time'             => $dateTime->format('H:i'),
           'total_price'      => $row['total_price'],
+          'payment_method'   => $row['payment_method'],
           'products'         => $rowDetails,
         ];
       }
@@ -285,7 +286,7 @@ class TransactionsController extends ResourceController
     try {
       $db = \Config\Database::connect();
       $builder = $db->table('transactions');
-      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time');
+      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time, transactions.payment_method');
       $builder->join('users', 'users.id = transactions.user_id');
 
       // Ambil param query
@@ -353,6 +354,7 @@ class TransactionsController extends ResourceController
           'date'             => $dateTime->format('Y-m-d'),
           'time'             => $dateTime->format('H:i'),
           'total_price'      => $row['total_price'],
+          'payment_method'   => $row['payment_method'],
           'products'         => $rowDetails,
         ];
       }

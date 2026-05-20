@@ -44,6 +44,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     );
   };
 
+  const addMultipleVariant = (variant: any, count: number) => {
+    dispatch(
+      addToCart({
+        variant_id: variant.variant_id,
+        product_id: product.id,
+        name: product.name,
+        price: variant.price,
+        quantity: count,
+        descriptions: product.descriptions,
+        weight_grams: variant.weight_grams,
+        subtotal: variant.price * count,
+      }),
+    );
+  };
+
   // =========== Arraging desctiptions
   const descriptionList = React.useMemo(() => {
     if (!product.descriptions) return [];
@@ -113,52 +128,104 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
 
         {/* VARIANTS */}
-        {product?.variants?.map((v) => {
+        {product?.variants?.map((v, idx) => {
           const item = cartMap[v.variant_id];
           const qty = item?.quantity ?? 0;
 
+          const nameLower = product.name?.toLowerCase() || "";
+          const isBorongProduct =
+            nameLower.includes("sushi") ||
+            nameLower.includes("mochi") ||
+            nameLower.includes("donat");
+
           return (
-            <div key={`${product.id}-${v.variant_id}`} className="variant-row">
-              <div className="variant-info">
-                <span className="variant-weight">
-                  {formatWeight(v.weight_grams)}
-                </span>
+            <div
+              key={`${product.id}-${v.variant_id}`}
+              style={{
+                borderBottom:
+                  idx === (product.variants?.length ?? 0) - 1
+                    ? "none"
+                    : "1px dashed rgba(233, 226, 216, 0.8)",
+                paddingBottom: "8px",
+                paddingTop: "4px",
+              }}
+            >
+              <div className="variant-row" style={{ borderBottom: "none" }}>
+                <div className="variant-info">
+                  <span className="variant-weight">
+                    {formatWeight(v.weight_grams)}
+                  </span>
 
-                <span className="variant-price">{rupiahFormat(v.price)}</span>
-              </div>
+                  <span className="variant-price">{rupiahFormat(v.price)}</span>
+                </div>
 
-              <div className="variant-action">
-                {qty === 0 ? (
-                  <IonButton size="small" onClick={() => addVariant(v)}>
-                    +
-                  </IonButton>
-                ) : (
-                  <div className="qty-control">
-                    <IonButton
-                      color="danger"
-                      size="small"
-                      onClick={() => remove(v.variant_id)}
-                    >
-                      x
-                    </IonButton>
-                    <IonButton
-                      size="small"
-                      onClick={() => decrease(v.variant_id)}
-                    >
-                      -
-                    </IonButton>
-
-                    <span className="qty">{qty}</span>
-
-                    <IonButton
-                      size="small"
-                      onClick={() => increase(v.variant_id)}
-                    >
+                <div className="variant-action">
+                  {qty === 0 ? (
+                    <IonButton size="small" onClick={() => addVariant(v)}>
                       +
                     </IonButton>
-                  </div>
-                )}
+                  ) : (
+                    <div className="qty-control">
+                      <IonButton
+                        color="danger"
+                        size="small"
+                        onClick={() => remove(v.variant_id)}
+                      >
+                        x
+                      </IonButton>
+                      <IonButton
+                        size="small"
+                        onClick={() => decrease(v.variant_id)}
+                      >
+                        -
+                      </IonButton>
+
+                      <span className="qty">{qty}</span>
+
+                      <IonButton
+                        size="small"
+                        onClick={() => increase(v.variant_id)}
+                      >
+                        +
+                      </IonButton>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Multiple Add Buttons Row */}
+              {isBorongProduct && (
+                <div
+                  className="multiple-add-row"
+                  style={{
+                    display: "flex",
+                    gap: "6px",
+                    justifyContent: "flex-end",
+                    marginTop: "6px",
+                    paddingRight: "2px",
+                  }}
+                >
+                  {[3, 6, 8].map((count) => (
+                    <IonButton
+                      key={count}
+                      size="small"
+                      fill="outline"
+                      style={{
+                        margin: 0,
+                        "--border-radius": "6px",
+                        fontSize: "0.75rem",
+                        height: "24px",
+                        minHeight: "24px",
+                        "--color": "var(--ion-color-primary)",
+                        "--border-color": "var(--ion-color-primary)",
+                      }}
+                      onClick={() => addMultipleVariant(v, count)}
+                    >
+                      +{count}
+                    </IonButton>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

@@ -213,6 +213,38 @@ const DetailOrder: React.FC = () => {
     }
   }, [cashGiven, total]);
 
+  // Effect to automatically populate/update default note for Maxim delivery
+  useEffect(() => {
+    const defaultNotesText = `Harga Barang: ${rupiahFormat(total)}\n`;
+    if (isOnlineOrder) {
+      if (!customerInfo.notes) {
+        setCustomerInfo((prev) => ({
+          ...prev,
+          notes: defaultNotesText,
+        }));
+      } else {
+        const priceRegex = /^Harga Barang: [^\n]+\n/;
+        if (priceRegex.test(customerInfo.notes)) {
+          setCustomerInfo((prev) => ({
+            ...prev,
+            notes: prev.notes.replace(priceRegex, defaultNotesText),
+          }));
+        }
+      }
+    } else {
+      const priceRegex = /^Harga Barang: [^\n]+\n/;
+      if (customerInfo.notes) {
+        // If the notes are exactly the default notes text, clear them
+        if (customerInfo.notes === defaultNotesText || customerInfo.notes.trim() === `Harga Barang: ${rupiahFormat(total)}`) {
+          setCustomerInfo((prev) => ({
+            ...prev,
+            notes: "",
+          }));
+        }
+      }
+    }
+  }, [isOnlineOrder, total]);
+
 
 
 

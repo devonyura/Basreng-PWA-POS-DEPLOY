@@ -8,6 +8,7 @@ interface TransactionItem {
   time: string;
   date: string;
   total_price: number;
+  payment_method?: string;
   kasir?: string;
   products?: {
     product_name: string;
@@ -25,13 +26,88 @@ interface Props {
   onReload: () => void;
 }
 
+const getPaymentBadge = (method?: string) => {
+  if (!method) return null;
+  const m = method.toLowerCase();
+  if (m === "qris") {
+    return (
+      <span
+        style={{
+          backgroundColor: "#fee2e2",
+          color: "#dc2626",
+          padding: "3px 8px",
+          borderRadius: "9999px",
+          fontSize: "0.7rem",
+          fontWeight: "700",
+          letterSpacing: "0.5px",
+          border: "1px solid rgba(220, 38, 38, 0.2)"
+        }}
+      >
+        QRIS
+      </span>
+    );
+  }
+  if (m === "cash") {
+    return (
+      <span
+        style={{
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+          padding: "3px 8px",
+          borderRadius: "9999px",
+          fontSize: "0.7rem",
+          fontWeight: "700",
+          letterSpacing: "0.5px",
+          border: "1px solid rgba(21, 128, 61, 0.2)"
+        }}
+      >
+        CASH
+      </span>
+    );
+  }
+  if (m === "transfer_bank" || m === "tf" || m === "transfer") {
+    return (
+      <span
+        style={{
+          backgroundColor: "#dbeafe",
+          color: "#1d4ed8",
+          padding: "3px 8px",
+          borderRadius: "9999px",
+          fontSize: "0.7rem",
+          fontWeight: "700",
+          letterSpacing: "0.5px",
+          border: "1px solid rgba(29, 78, 216, 0.2)"
+        }}
+      >
+        TF
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        backgroundColor: "#f1f5f9",
+        color: "#475569",
+        padding: "3px 8px",
+        borderRadius: "9999px",
+        fontSize: "0.7rem",
+        fontWeight: "700",
+        letterSpacing: "0.5px",
+        border: "1px solid rgba(71, 85, 105, 0.2)"
+      }}
+    >
+      {method.toUpperCase()}
+    </span>
+  );
+};
+
 const TransactionList: React.FC<Props> = ({ data, onClickItem, onReload }) => {
   const isPaketTransaction = (item: TransactionItem): boolean => {
     if (!item.products || !Array.isArray(item.products)) return false;
     return item.products.some(
       (p) =>
-        p.product_name?.toLowerCase().includes("paket") ||
-        p.category_name?.toLowerCase() === "paket"
+          p.product_name?.toLowerCase().includes("paket") ||
+          p.category_name?.toLowerCase() === "paket"
     );
   };
 
@@ -92,15 +168,18 @@ const TransactionList: React.FC<Props> = ({ data, onClickItem, onReload }) => {
                     >
                       {item.transaction_code}
                     </span>
-                    <span
-                      style={{
-                        color: isPaket ? "#b45309" : "#16a34a",
-                        fontWeight: "800",
-                        fontSize: "1.05rem",
-                      }}
-                    >
-                      {rupiahFormat(item.total_price)}
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {getPaymentBadge(item.payment_method)}
+                      <span
+                        style={{
+                          color: isPaket ? "#b45309" : "#16a34a",
+                          fontWeight: "800",
+                          fontSize: "1.05rem",
+                        }}
+                      >
+                        {rupiahFormat(item.total_price)}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Subtitle Row: Time, Date & Cashier Pill */}
