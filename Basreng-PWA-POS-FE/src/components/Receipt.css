@@ -103,3 +103,25 @@
   font-weight: 600;
   letter-spacing: 1px;
 }
+
+.receipt-package-list {
+  padding-left: 15px !important;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #555 !important;
+  text-transform: none;
+}
+
+.receipt-package-list div {
+  margin-bottom: 2px;
+}
+
+.receipt-package-list ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.receipt-package-list li {
+  margin: 0;
+  line-height: 1.25;
+}

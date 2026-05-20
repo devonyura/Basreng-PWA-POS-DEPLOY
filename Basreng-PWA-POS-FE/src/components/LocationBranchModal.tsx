@@ -53,49 +53,49 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
       console.error('Gagal mengambil daftar cabang:', error);
     }
 
-    // Tunggu 6 detik sesuai permintaan
-    // setTimeout(async () => {
-      // setStatusMessage('Mengambil titik lokasi...');
+    // Tunggu 3 detik sesuai permintaan
+    setTimeout(async () => {
+      setStatusMessage('Mengambil titik lokasi...');
       
-      // if (!navigator.geolocation) {
-      //   setStatusMessage('Geolocation tidak didukung oleh browser ini.');
-      //   setLoading(false);
-      //   setShowForm(true);
-      //   return;
-      // }
+      if (!navigator.geolocation) {
+        setStatusMessage('Geolocation tidak didukung oleh browser ini.');
+        setLoading(false);
+        setShowForm(true);
+        return;
+      }
 
-      // navigator.geolocation.getCurrentPosition(
-      //   async (position) => {
-      //     const latitude = position.coords.latitude;
-      //     const longitude = position.coords.longitude;
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
           
-      //     setStatusMessage(`Lokasi akurat terdeteksi (${latitude.toFixed(4)}, ${longitude.toFixed(4)}). Mencari cabang terdekat...`);
-      //     try {
-      //       const nearest = await getNearestBranch(latitude, longitude);
-      //       if (nearest && nearest.branch_id) {
-      //         setSelectedBranchId(nearest.branch_id);
-      //         setStatusMessage('Cabang terdekat ditemukan!');
-      //       } else {
-      //         setStatusMessage('Tidak ada cabang dalam radius 100m. Silahkan pilih manual.');
-      //       }
-      //     } catch (error) {
-      //       console.error('Error fetching nearest branch:', error);
-      //       setStatusMessage('Gagal mencari cabang terdekat. Silahkan pilih manual.');
-      //     } finally {
-      //       setLoading(false);
-      //       setShowForm(true);
-      //     }
-      //   },
-      //   (error) => {
+          setStatusMessage(`Lokasi akurat terdeteksi (${latitude.toFixed(4)}, ${longitude.toFixed(4)}). Mencari cabang terdekat...`);
+          try {
+            const nearest = await getNearestBranch(latitude, longitude);
+            if (nearest && nearest.branch_id) {
+              setSelectedBranchId(nearest.branch_id);
+              setStatusMessage('Cabang terdekat ditemukan!');
+            } else {
+              setStatusMessage('Tidak ada cabang dalam radius 100m. Silahkan pilih manual.');
+            }
+          } catch (error) {
+            console.error('Error fetching nearest branch:', error);
+            setStatusMessage('Gagal mencari cabang terdekat. Silahkan pilih manual.');
+          } finally {
+            setLoading(false);
+            setShowForm(true);
+          }
+        },
+        (error) => {
           console.error('Geolocation error:');
-          // setStatusMessage('Gagal mendapatkan lokasi. Silahkan pilih manual.');
+          setStatusMessage('Gagal mendapatkan lokasi. Silahkan pilih manual.');
           setStatusMessage('Silahkan pilih Cabang:');
           setLoading(false);
           setShowForm(true);
-      //   },
-      //   { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      // );
-    // }, 6000);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }, 3000);
   };
 
   const handleConfirm = () => {

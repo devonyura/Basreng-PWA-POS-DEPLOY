@@ -23,6 +23,7 @@ export interface DataProduct {
 	id: number
 	name: string
 	category_id: number
+	category_name?: string | null
 	descriptions?: string
 	img?: string
 	variants?: ProductVariant[]

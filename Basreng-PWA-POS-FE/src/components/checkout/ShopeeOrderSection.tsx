@@ -1,12 +1,4 @@
-import {
-  IonInput,
-  IonItem,
-  IonItemDivider,
-  IonItemGroup,
-  IonLabel,
-  IonSelect,
-  IonSelectOption,
-} from "@ionic/react";
+import { IonInput, IonItem, IonItemDivider, IonItemGroup, IonLabel } from "@ionic/react";
 import React from "react";
 
 interface Props {
@@ -20,15 +12,20 @@ const ShopeeOrderSection: React.FC<Props> = ({
   shopeeCode,
   setShopeeCode,
 }) => {
+  if (!isShopeeOrder) {
+    return null;
+  }
+
   return (
-    <IonItemGroup className={!isShopeeOrder ? "hidden-button" : ""}>
+    <IonItemGroup>
       <IonItemDivider>
-        <IonLabel>Nomor Pesanan Shopee</IonLabel>
+        <IonLabel>Nomor Pesanan Shopee *</IonLabel>
       </IonItemDivider>
       <IonItem>
         <IonInput
           name="shopeeCode"
           type="text"
+          required
           placeholder="Masukkan No Pesanan, Contoh SPXID025489712345"
           value={shopeeCode}
           onIonChange={(e) => setShopeeCode(e.detail.value)}

@@ -8,6 +8,7 @@ import {
   IonLabel,
   IonSegmentButton,
   useIonViewWillEnter,
+  useIonViewWillLeave,
   IonAlert,
 } from "@ionic/react";
 
@@ -28,6 +29,7 @@ import { fetchProducts } from "../../redux/productSlice";
 import { fetchCategories } from "../../redux/categorySlice";
 import { fetchSubCategories } from "../../redux/subCategorySlice";
 import { RootState, AppDispatch } from "../../redux/store";
+import { clearCart } from "../../redux/cartSlice";
 
 // Loading Component
 import LoadingScreen from "../../components/LoadingScreen";
@@ -70,6 +72,10 @@ const KasirPage: React.FC = () => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
     dispatch(fetchSubCategories());
+  }, [dispatch]);
+
+  useIonViewWillLeave(() => {
+    dispatch(clearCart());
   }, [dispatch]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");

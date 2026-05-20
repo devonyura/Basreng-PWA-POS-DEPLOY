@@ -113,10 +113,10 @@ class ReportController extends ResourceController
         COUNT(t.id) AS total_transactions,
         COALESCE(SUM(t.total_price),0) AS total_income,
 
-        COALESCE(SUM(CASE WHEN t.payment_method = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
 
       FROM transactions t
       JOIN branch b ON t.branch_id = b.branch_id
@@ -146,7 +146,7 @@ class ReportController extends ResourceController
         t.transaction_code,
         DATE(t.date_time) AS date,
         SUM(td.quantity) AS total_item,
-        t.payment_method,
+        COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) AS payment_method,
         t.is_online_order,
         t.total_price
       FROM transactions t
@@ -371,8 +371,8 @@ class ReportController extends ResourceController
     // 🔥 NEW: PAYMENT SUMMARY
     // =========================
     $paymentQuery = $createBuilder()
-      ->select('t.payment_method, SUM(t.total_price) as total')
-      ->groupBy('t.payment_method')
+      ->select("COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) AS transaction_type, SUM(t.total_price) as total")
+      ->groupBy("COALESCE(NULLIF(t.transaction_type, ''), t.payment_method)")
       ->get()
       ->getResultArray();
 
@@ -385,7 +385,10 @@ class ReportController extends ResourceController
     ];
 
     foreach ($paymentQuery as $row) {
-      $paymentSummary[$row['payment_method']] = (int)$row['total'];
+      $paymentType = $row['transaction_type'] ?? null;
+      if (array_key_exists($paymentType, $paymentSummary)) {
+        $paymentSummary[$paymentType] = (int)$row['total'];
+      }
     }
 
     return [
@@ -519,10 +522,10 @@ class ReportController extends ResourceController
         COUNT(t.id) AS total_transactions,
         COALESCE(SUM(t.total_price),0) AS total_income,
 
-        COALESCE(SUM(CASE WHEN t.payment_method = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
         
       FROM transactions t
       JOIN branch b ON t.branch_id = b.branch_id
@@ -725,10 +728,10 @@ class ReportController extends ResourceController
         COUNT(t.id) AS total_transactions,
         COALESCE(SUM(t.total_price),0) AS total_income,
 
-        COALESCE(SUM(CASE WHEN t.payment_method = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
-        COALESCE(SUM(CASE WHEN t.payment_method = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'cash' THEN t.total_price ELSE 0 END),0) AS total_income_cash,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'transfer_bank' THEN t.total_price ELSE 0 END),0) AS total_income_transfer_bank,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'qris' THEN t.total_price ELSE 0 END),0) AS total_income_qris,
+        COALESCE(SUM(CASE WHEN COALESCE(NULLIF(t.transaction_type, ''), t.payment_method) = 'shopee' THEN t.total_price ELSE 0 END),0) AS total_income_shopee
         
       FROM transactions t
       JOIN branch b ON t.branch_id = b.branch_id

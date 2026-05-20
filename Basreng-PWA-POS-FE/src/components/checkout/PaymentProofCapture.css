@@ -1,0 +1,84 @@
+.payment-proof-capture {
+  width: 100%;
+  padding: 12px 0;
+}
+
+.payment-proof-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.payment-proof-header b {
+  font-size: 0.95rem;
+}
+
+.payment-proof-note {
+  margin: 0 0 10px;
+  color: #6a7f90;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.payment-proof-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.payment-proof-actions ion-button {
+  margin: 0;
+  --border-radius: 10px;
+}
+
+.payment-proof-camera {
+  display: grid;
+  gap: 10px;
+}
+
+.payment-proof-camera video {
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  background: #101820;
+  object-fit: cover;
+}
+
+.payment-proof-preview {
+  display: grid;
+  gap: 8px;
+}
+
+.payment-proof-preview img {
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.payment-proof-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payment-proof-preview-footer p {
+  margin: 0;
+  color: var(--ion-color-success) !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.payment-proof-preview-footer ion-button {
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  --padding-end: 0;
+  --padding-start: 0;
+}
+
+.payment-proof-file {
+  display: none;
+}

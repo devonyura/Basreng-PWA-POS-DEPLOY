@@ -1,0 +1,143 @@
+.cart-item-card {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(91, 112, 131, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.cart-item-image {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f0ede8;
+}
+
+.cart-item-main {
+  min-width: 0;
+}
+
+.cart-item-top,
+.cart-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cart-item-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cart-item-title {
+  display: block;
+  overflow: hidden;
+  color: #2c3b47;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.cart-item-price {
+  color: #6a7f90;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.cart-item-trash {
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  margin: 0;
+  flex: 0 0 auto;
+  --border-radius: 8px;
+  --padding-end: 0;
+  --padding-start: 0;
+}
+
+.cart-item-bottom {
+  margin-top: 8px;
+}
+
+.cart-item-package {
+  margin-top: 6px;
+  color: #647684;
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+.cart-item-package span {
+  display: block;
+  font-weight: 700;
+}
+
+.cart-item-package ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  margin: 2px 0 0;
+  padding-left: 14px;
+}
+
+.cart-item-package li {
+  margin: 0;
+}
+
+.cart-item-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid rgba(91, 112, 131, 0.14);
+  border-radius: 999px;
+  background: #f8f6f2;
+  padding: 1px;
+}
+
+.cart-item-qty ion-button {
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  margin: 0;
+  --border-radius: 999px;
+  --color: #2c3b47;
+  --padding-end: 0;
+  --padding-start: 0;
+}
+
+.cart-item-qty span {
+  min-width: 22px;
+  color: #2c3b47;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.cart-item-subtotal {
+  color: #2d8a4e;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .cart-item-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .cart-item-image {
+    width: 64px;
+    height: 64px;
+  }
+}
