@@ -48,6 +48,19 @@ const TransactionHistory: React.FC = () => {
     string | null
   >(null);
 
+  const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchValue);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchValue]);
+
   const { transactions, branchList, usersList, isLoading, reload } =
     useTransactionHistory({
       role,
@@ -55,6 +68,7 @@ const TransactionHistory: React.FC = () => {
       selectedDateFilter,
       selectedBranchId,
       selectedKasirId,
+      searchQuery: debouncedSearchQuery,
       enabled: isAuthReady,
     });
 
@@ -167,6 +181,8 @@ const TransactionHistory: React.FC = () => {
               onOpenKasir={() => setShowKasirAlert(true)}
               onOpenBranch={() => setShowBranchAlert(true)}
               getDateFilterLabel={getDateFilterLabel}
+              searchQuery={searchValue}
+              onSearchChange={setSearchValue}
             />
           </IonHeader>
           <IonContent className="ion-padding">

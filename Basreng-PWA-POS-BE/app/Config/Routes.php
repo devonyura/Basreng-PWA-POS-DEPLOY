@@ -50,6 +50,7 @@ $routes->group('api', ['filter' => 'auth'], function ($routes) {
 
   $routes->resource('siswa', ['controller' => 'SiswaController']);
 
+  $routes->get('transactions/search', 'TransactionsController::search');
   $routes->resource('transactions', ['controller' => 'TransactionsController']);
   $routes->post('transactions/create-transaction', 'TransactionsController::createTransaction');
   $routes->post('transactions/get-receipt', 'TransactionsController::get_receipt');

@@ -279,6 +279,98 @@ class TransactionsController extends ResourceController
     }
   }
 
+  // GET /transactions/search
+  public function search()
+  {
+    try {
+      $db = \Config\Database::connect();
+      $builder = $db->table('transactions');
+      $builder->select('transactions.id, transactions.transaction_code, users.username AS kasir, transactions.total_price, transactions.date_time');
+      $builder->join('users', 'users.id = transactions.user_id');
+
+      // Ambil param query
+      $queryParam = $this->request->getGet('query');
+
+      // Ambil param branch (for role filtering/restrictions)
+      $branchId = $this->request->getGet('branch');
+      if (!empty($branchId)) {
+        $builder->where('transactions.branch_id', $branchId);
+      }
+
+      if (!empty($queryParam)) {
+        $builder->groupStart()
+          ->like('transactions.transaction_code', $queryParam)
+          ->orLike('users.username', $queryParam)
+          ->orLike('transactions.date_time', $queryParam)
+          ->groupEnd();
+      }
+
+      $builder->orderBy('transactions.date_time', 'DESC');
+      $query = $builder->get();
+      $results = $query->getResultArray();
+
+      if (empty($results)) {
+        return $this->respond([
+          'status' => 'success',
+          'data'   => [],
+        ]);
+      }
+
+      // Ambil all transaction IDs untuk query details
+      $transactionIds = array_column($results, 'id');
+
+      // Query all transaction details for these transactions
+      $details = $db->table('transaction_details td')
+        ->select('td.transaction_id, p.name AS product_name, p.descriptions AS product_description, c.name AS category_name, td.quantity, td.price, td.subtotal')
+        ->join('product_variants pv', 'pv.id = td.product_variant_id', 'left')
+        ->join('products p', 'p.id = pv.product_id', 'left')
+        ->join('categories c', 'c.id = p.category_id', 'left')
+        ->whereIn('td.transaction_id', $transactionIds)
+        ->get()
+        ->getResultArray();
+
+      // Group details by transaction_id
+      $detailsByTransaction = [];
+      foreach ($details as $detail) {
+        $detailsByTransaction[$detail['transaction_id']][] = [
+          'product_name' => $detail['product_name'],
+          'category_name' => $detail['category_name'],
+          'product_description' => $detail['product_description'],
+          'quantity' => (int)$detail['quantity'],
+          'price' => (int)$detail['price'],
+          'subtotal' => (int)$detail['subtotal'],
+        ];
+      }
+
+      // Format hasil untuk ambil date dan time dari kolom date_time
+      $formatted = [];
+      foreach ($results as $row) {
+        $dateTime = new \DateTime($row['date_time']);
+        $rowDetails = $detailsByTransaction[$row['id']] ?? [];
+        $formatted[] = [
+          'transaction_code' => $row['transaction_code'],
+          'kasir'            => $row['kasir'],
+          'date'             => $dateTime->format('Y-m-d'),
+          'time'             => $dateTime->format('H:i'),
+          'total_price'      => $row['total_price'],
+          'products'         => $rowDetails,
+        ];
+      }
+
+      return $this->respond([
+        'status' => 'success',
+        'data'   => $formatted,
+      ]);
+    } catch (Exception $e) {
+      return Services::response()
+        ->setJSON([
+          'status'  => 'error',
+          'message' => 'Terjadi kesalahan pada server.',
+          'error'   => $e->getMessage()
+        ])
+        ->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
 
   // GET /transactions/{id}
   public function show($transactions_code = null)

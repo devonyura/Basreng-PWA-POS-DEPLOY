@@ -142,7 +142,7 @@ const KasirPage: React.FC = () => {
           ))}
         </IonSegment>
 
-        <div className="ion-padding">
+        <div className="product-grid">
           {products
             .filter(
               (product) => String(product.category_id) === selectedCategory,

@@ -7,6 +7,8 @@ interface Props {
   selectedBranchName: string;
   isAdmin: boolean;
   isKasirRole: boolean;
+  searchQuery: string;
+  onSearchChange: (val: string) => void;
 
   onOpenDate: () => void;
   onOpenKasir: () => void;
@@ -21,6 +23,8 @@ const TransactionFilterBar: React.FC<Props> = ({
   selectedBranchName,
   isAdmin,
   isKasirRole,
+  searchQuery,
+  onSearchChange,
   onOpenDate,
   onOpenKasir,
   onOpenBranch,
@@ -29,7 +33,11 @@ const TransactionFilterBar: React.FC<Props> = ({
   return (
     <>
       <IonToolbar>
-        <IonSearchbar placeholder="Cari Transaksi" />
+        <IonSearchbar
+          value={searchQuery}
+          onIonInput={(e) => onSearchChange(e.detail.value || "")}
+          placeholder="Cari Transaksi"
+        />
       </IonToolbar>
 
       <IonToolbar className="filter-container">

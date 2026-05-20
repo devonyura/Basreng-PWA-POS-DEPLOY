@@ -1,22 +1,86 @@
-.ion-margin-top {
-  text-align: center;
+/* Premium DetailOrder and Checkout Modal Styling */
+
+/* Force light background and high contrast text inside all modals */
+ion-modal ion-content {
+  --background: #f7f5f1 !important;
+  --color: #2c3b47 !important;
+}
+
+ion-modal ion-toolbar {
+  --background: #e9e2d8 !important;
+  --color: #2c3b47 !important;
+  color: #2c3b47 !important;
+}
+
+ion-modal ion-toolbar ion-title {
+  color: #2c3b47 !important;
+}
+
+ion-modal ion-list {
+  background: #ffffff !important;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 12px 0;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+ion-modal ion-item {
+  --background: #ffffff !important;
+  --color: #2c3b47 !important;
+  --border-color: rgba(233, 226, 216, 0.4);
+  color: #2c3b47 !important;
+}
+
+ion-modal ion-input {
+  --color: #2c3b47 !important;
+  --placeholder-color: rgba(91, 112, 131, 0.6) !important;
+  color: #2c3b47 !important;
+}
+
+ion-modal ion-checkbox {
+  --color: #2c3b47 !important;
+  color: #2c3b47 !important;
+}
+
+ion-modal p,
+ion-modal h5,
+ion-modal h3,
+ion-modal h2,
+ion-modal span:not(.payment-val):not(.p-chip):not(.payment-label),
+ion-modal b:not(.text-danger):not(.text-success) {
+  color: #2c3b47;
+}
+
+/* Prevent functional text colors from being overwritten */
+ion-modal .text-success,
+ion-modal p[style*="color: green"],
+ion-modal p[style*="color: rgb(0, 128, 0)"] {
+  color: var(--ion-color-success) !important;
+}
+
+ion-modal .text-danger,
+ion-modal h4 b,
+ion-modal p[style*="color: red"],
+ion-modal p[style*="color: rgb(255, 0, 0)"] {
+  color: var(--ion-color-danger) !important;
+}
+
+/* Specific button text safety */
+ion-modal ion-button,
+ion-modal ion-button * {
+  color: inherit;
 }
 
 ion-modal ion-label {
-  font-weight: 500;
-  font-size: 1.3rem;
+  font-weight: 600;
+  font-size: 1rem !important;
+  color: #2c3b47 !important;
 }
 
 .col-trash {
   display: flex;
   justify-content: center;
-  align-items: center
-}
-
-.amount.title,
-.amount.subtotal {
-  justify-content: start;
-  margin: 0 !important;
+  align-items: center;
 }
 
 .flex-center {
@@ -29,101 +93,151 @@ ion-modal ion-label {
   width: 100%;
 }
 
-
-/* extras */
-
 .btn-checkout {
-  margin-top: 15px;
+  --background: var(--ion-color-primary);
+  --color: #ffffff;
+  --border-radius: 14px;
+  font-weight: 700;
+  height: 52px;
+  margin-top: 24px;
+  box-shadow: 0 8px 24px rgba(79, 115, 137, 0.25);
+  transition: var(--app-transition);
+}
+
+.btn-checkout::part(native):hover {
+  filter: brightness(1.05);
 }
 
 .space {
-  height: 100px;
+  height: 80px;
 }
 
-/* .cash {
-  display: none;
-} */
-
-
-/* order online */
-.button-wrapper ion-button {
-  width: 100vw;
-}
-
-.online-order-receipt {
-  border-top: 1px solid black;
-}
-
-.online-order-receipt td {
-  padding-top: 15px;
-}
-
-.tr-title {
-  font-weight: 600;
-}
-
-.text-left {
-  text-align: left !important;
-}
-
-/* Payment method modal */
+/* Payment Method & QRIS Section */
 .payment-method {
-  padding: 10px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 80%;
+  height: 100%;
+  background: var(--ion-background-color);
 }
 
 .payment-method div.transfer-bank {
-  border: 1px solid black;
-  padding: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(233, 226, 216, 0.8);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--app-card-shadow);
+  width: 100%;
+  max-width: 360px;
+  transition: var(--app-transition);
+}
+
+.payment-method div.transfer-bank p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-slate-blue);
+  margin-bottom: 12px;
+}
+
+.payment-method div.transfer-bank h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ion-color-primary);
+  letter-spacing: -0.02em;
+  margin: 8px 0;
+}
+
+.payment-method div.transfer-bank h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 4px 0 16px 0;
+}
+
+.payment-method div.transfer-bank h4 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--ion-color-danger);
+  border-top: 1px dashed rgba(233, 226, 216, 0.8);
+  padding-top: 16px;
+  margin: 12px 0 0 0;
 }
 
 .payment-method div.QRIS {
-  /* padding: 20px; */
-  margin-top: 50px;
-}
-
-.payment-method {
-  font-size: 1.2rem;
-}
-
-.payment-method h2 {
-  margin-bottom: 0;
-  font-size: 1.7rem;
-}
-
-.payment-method h3 {
-  margin-top: 5px;
-  font-size: 1.2rem;
-}
-
-.payment-method h4 {
+  background: #ffffff;
+  border: 1px solid rgba(233, 226, 216, 0.8);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--app-card-shadow);
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 20px;
-  font-size: 1.6rem;
 }
 
-.hidden-button {
-  display: none;
+.payment-method div.QRIS p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-slate-blue);
+  margin-bottom: 16px;
 }
 
-/* input */
+.payment-method div.QRIS img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border: 1px solid rgba(233, 226, 216, 0.5);
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+.payment-method div.QRIS h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 4px 0 12px 0;
+}
+
+.payment-method div.QRIS h4 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--ion-color-primary);
+}
+
+/* Custom styled digit input for cash payment */
 ion-input.input-digit {
-  opacity: 1 !important;
-  --background: #0da100;
-  --color: #ffffff;
-  --placeholder-color: #ddd;
-  --placeholder-opacity: 0.8;
-  --padding-bottom: 10px;
-  --padding-end: 10px;
-  --padding-start: 10px;
-  --padding-top: 10px;
+  --background: rgba(90, 140, 106, 0.1);
+  --color: var(--ion-color-success-shade);
+  --placeholder-color: var(--ion-color-success);
+  --placeholder-opacity: 0.7;
+  --padding-bottom: 12px;
+  --padding-end: 16px;
+  --padding-start: 16px;
+  --padding-top: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 1px solid rgba(90, 140, 106, 0.3);
+  border-radius: 12px;
 }
 
 .amount {
   text-transform: capitalize;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Checkbox alignment */
+ion-checkbox {
+  --border-radius: 6px;
+  --border-color: rgba(118, 139, 158, 0.5);
+  --border-color-checked: var(--ion-color-primary);
+  --background-checked: var(--ion-color-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
 }

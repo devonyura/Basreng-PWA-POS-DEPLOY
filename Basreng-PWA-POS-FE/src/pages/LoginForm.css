@@ -1,51 +1,91 @@
+/* Premium Login Page Styling */
+
+ion-content.ion-padding {
+  --background: linear-gradient(135deg, #4f7389 0%, #586e79 50%, #2c3b47 100%) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .app-logo {
-  padding: 10px;
-  max-height: 20vh;
-  object-fit: contain;
+  display: block;
+  margin: 40px auto 20px auto;
+  max-height: 120px;
+  width: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+  transition: all 0.5s ease;
+  animation: logoFloat 4s ease-in-out infinite;
 }
 
-.struk-logo-preview {
-  padding: 0;
-  /* height: 20px; */
-  width: 180px;
-  margin: auto;
+@keyframes logoFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
 }
 
-.struk-logo {
-  padding: 0;
-  height: 120px;
-  width: 120px;
-  margin: auto;
+.login-container {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  padding: 30px 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  max-width: 440px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
 }
 
-ion-segment-button::part(indicator-background) {
-  background: #a30808;
+/* Tablet responsiveness for login container */
+@media (min-width: 768px) {
+  .login-container {
+    margin-top: 60px;
+    padding: 40px 36px;
+  }
+  .app-logo {
+    max-height: 150px;
+    margin-top: 80px;
+  }
 }
 
-/* Material Design styles */
-ion-segment-button.md::part(native) {
-  color: #000;
+.login-container ion-text h3 {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #2c3b47;
+  margin-top: 0;
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #4f7389 0%, #2c3b47 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.segment-button-checked.md::part(native) {
-  color: #a30808;
+.login-container ion-item {
+  --background: rgba(246, 244, 240, 0.7);
+  --border-color: rgba(233, 226, 216, 0.8);
+  --padding-start: 14px;
+  --padding-end: 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(233, 226, 216, 0.5);
+  transition: all 0.3s ease;
 }
 
-ion-segment-button.md::part(indicator-background) {
-  height: 4px;
+.login-container ion-item:focus-within {
+  --border-color: #4f7389;
+  border-color: rgba(79, 115, 137, 0.5);
+  box-shadow: 0 0 0 3px rgba(79, 115, 137, 0.15);
+  background: #ffffff;
 }
 
-/* iOS styles */
-ion-segment-button.ios::part(native) {
-  color: #a30808;
-}
-
-.segment-button-checked.ios::part(native) {
-  color: #fff;
-}
-
-ion-segment-button.ios::part(indicator-background) {
-  border-radius: 20px;
+.login-container ion-input {
+  font-weight: 500;
+  color: #2c3b47;
 }
 
 .username-input {
@@ -54,4 +94,55 @@ ion-segment-button.ios::part(indicator-background) {
 
 .username-input::part(native) {
   text-transform: none !important;
+}
+
+.login-button {
+  --background: #4f7389;
+  --background-hover: #5b7083;
+  --background-focused: #4f7389;
+  --background-activated: #2c3b47;
+  --color: #ffffff;
+  --border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  height: 52px;
+  margin-top: 15px;
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 25px rgba(79, 115, 137, 0.35);
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(79, 115, 137, 0.45);
+}
+
+.login-button:active {
+  transform: translateY(1px);
+}
+
+/* Branch label customization */
+.login-container ion-item ion-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #5b7083;
+}
+
+.login-container ion-item ion-text {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Toast session styling */
+ion-toast::part(container) {
+  background: #c25f5f;
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(194, 95, 95, 0.25);
+}
+
+ion-toast::part(button) {
+  color: #ffffff;
+  font-weight: 700;
 }

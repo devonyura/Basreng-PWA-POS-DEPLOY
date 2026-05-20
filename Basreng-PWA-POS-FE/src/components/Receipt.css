@@ -1,9 +1,20 @@
 /* Receipt */
 .receipt-container {
-  padding: 10px;
-  border: 1px solid black;
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 16px;
+  border: 1px solid #000000;
   font-size: 0.85rem;
   text-transform: capitalize;
+}
+
+.receipt-container,
+.receipt-container p,
+.receipt-container th,
+.receipt-container td,
+.receipt-container span,
+.receipt-container b {
+  color: #000000 !important;
 }
 
 .receipt {

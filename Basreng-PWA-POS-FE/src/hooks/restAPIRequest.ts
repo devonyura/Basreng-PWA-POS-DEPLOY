@@ -374,6 +374,49 @@ export const getTransactionHistory = async (filter: TransactionFilter = {}) => {
 	}
 };
 
+export const searchTransactions = async (query: string, branch?: number) => {
+	try {
+		// Ambil token JWT dari localStorage
+		const TOKEN = Cookies.get("token");
+
+		// Cek apakah API online
+		const apiOnline = await isApiOnline();
+		if (!apiOnline) {
+			throw new Error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+		}
+
+		// bangun query string berdasarkan filter
+		const queryParams = new URLSearchParams();
+		queryParams.append("query", query);
+		if (branch) queryParams.append("branch", String(branch));
+
+		const queryString = queryParams.toString();
+		const url = `${BASE_API_URL}/api/transactions/search${queryString ? `?${queryString}` : ""}`;
+
+		// Konfigurasi request dengan header Authorization
+		const response = await fetch(url, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${TOKEN}`,
+			},
+		});
+
+		// Check Response
+		checkOKResponse(response);
+
+		// Ubah data ke json format
+		const data = await response.json();
+
+		return data.data;
+
+	} catch (error) {
+		console.error("Error searching transactions", error);
+		throw error;
+	}
+};
+
 export const findTransactionHistory = async (transactionCode: string) => {
 	try {
 		// Ambil token JWT dari localStorage

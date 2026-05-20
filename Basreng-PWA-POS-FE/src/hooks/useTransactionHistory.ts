@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 
-import { getTransactionHistory } from "./restAPIRequest";
+import { getTransactionHistory, searchTransactions } from "./restAPIRequest";
 import { getUsers, User } from "./restAPIUsers";
 import { getBranches, Branch } from "./restAPIBranch";
 
@@ -13,6 +13,7 @@ interface Params {
   selectedBranchId: string | null;
   selectedKasirId: string | null;
   transactionCode?: string;
+  searchQuery?: string;
 
   enabled?: boolean; // ✅ tambahan penting
 }
@@ -24,6 +25,7 @@ export const useTransactionHistory = ({
   selectedBranchId,
   selectedKasirId,
   transactionCode,
+  searchQuery,
   enabled = true,
 }: Params) => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -88,16 +90,24 @@ export const useTransactionHistory = ({
     try {
       setIsLoading(true);
 
-      const { startDate, endDate } = buildDate();
+      let result;
+      if (searchQuery) {
+        result = await searchTransactions(
+          searchQuery,
+          selectedBranchId ? parseInt(selectedBranchId) : undefined
+        );
+      } else {
+        const { startDate, endDate } = buildDate();
 
-      const result = await getTransactionHistory({
-        username: selectedUser?.username || "",
-        branch: selectedBranchId
-          ? parseInt(selectedBranchId)
-          : undefined,
-        start_date: startDate,
-        end_date: endDate,
-      });
+        result = await getTransactionHistory({
+          username: selectedUser?.username || "",
+          branch: selectedBranchId
+            ? parseInt(selectedBranchId)
+            : undefined,
+          start_date: startDate,
+          end_date: endDate,
+        });
+      }
 
       setTransactions(result || []); // 🔥 amanin null
     } catch (err) {
@@ -111,6 +121,7 @@ export const useTransactionHistory = ({
     selectedBranchId,
     selectedUser,
     selectedDateFilter,
+    searchQuery,
   ]);
 
   // ======================
@@ -135,6 +146,7 @@ export const useTransactionHistory = ({
     selectedBranchId,
     selectedKasirId,
     selectedDateFilter,
+    searchQuery,
     loadTransactions,
   ]);
 

@@ -235,245 +235,265 @@ const Dashboard: React.FC = () => {
               <IonTitle size="large">Ringkasan Hari ini</IonTitle>
             </IonToolbar>
           </IonHeader>
-          <IonGrid>
-            {/* Ringkasan Penjualan */}
+          <IonGrid className="dashboard-grid">
             <IonRow>
-              <IonCol size="12">
-                <IonCard>
+              {/* Kolom Utama / Kiri (Wider screens: 8/12, Mobile: 12/12) */}
+              <IonCol size="12" sizeLg="8">
+                {/* Ringkasan Penjualan */}
+                <IonCard className="summary-card ion-no-margin-bottom">
                   <IonGrid>
-                    <IonRow>
-                      <IonCol className="icon-card">
-                        <IonIcon icon={statsChart}></IonIcon>
+                    <IonRow className="ion-align-items-center ion-padding-top">
+                      <IonCol size="3" className="icon-card ion-text-center">
+                        <IonIcon icon={statsChart} color="primary" style={{ fontSize: '3.5rem' }}></IonIcon>
                       </IonCol>
-                      <IonCol size="8">
-                        <IonCardHeader>
-                          <IonCardTitle>Transaksi Hari Ini:</IonCardTitle>
+                      <IonCol size="9">
+                        <IonCardHeader style={{ padding: '0 0 4px 0' }}>
+                          <IonCardTitle style={{ fontSize: '1rem', color: 'var(--ion-color-medium)', fontWeight: 600 }}>TRANSAKSI HARI INI</IonCardTitle>
                         </IonCardHeader>
-                        <IonCardContent>
+                        <IonCardContent style={{ padding: 0 }}>
                           <div className="details-card">
-                            <h5>
-                              {isKasir
-                                ? "Transaksi Cabang Kamu"
-                                : "Semua Cabang"}
+                            <h5 style={{ margin: '4px 0', fontSize: '0.95rem' }}>
+                              {isKasir ? "Transaksi Cabang Kamu" : "Semua Cabang"}
                             </h5>
                             {branchData?.branch_name && (
-                              <p style={{ marginTop: "-5px", marginBottom: "10px", color: "var(--ion-color-medium)", fontSize: "0.9rem" }}>
+                              <p style={{ margin: "2px 0 8px 0", color: "var(--ion-color-medium)", fontSize: "0.85rem" }}>
                                 Lokasi: <strong>{branchData.branch_name}</strong>
                               </p>
                             )}
-                            <h2>{rupiahFormat(summary?.total_sales || 0)}</h2>
-                            <h4>
-                              Dari{" "}
-                              <strong>
-                                {summary?.total_transactions || 0}
-                              </strong>{" "}
-                              Transaksi
+                            <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '8px 0', color: 'var(--ion-color-primary)' }}>
+                              {rupiahFormat(summary?.total_sales || 0)}
+                            </h2>
+                            <h4 style={{ margin: '4px 0', fontSize: '0.95rem', fontWeight: 500 }}>
+                              Dari <strong style={{ color: 'var(--ion-color-dark)', fontWeight: 700 }}>{summary?.total_transactions || 0}</strong> Transaksi
                             </h4>
                           </div>
                         </IonCardContent>
                       </IonCol>
                     </IonRow>
+
                     {summary?.payment_summary && (
-                      <IonRow className="ion-padding-horizontal ion-padding-bottom">
+                      <IonRow className="ion-padding-top ion-padding-bottom">
                         <IonCol size="12">
-                          <IonCardTitle style={{ fontSize: "1.1rem", marginBottom: "8px", marginTop: "8px" }}>
-                            Ringkasan Pembayaran:
-                          </IonCardTitle>
-                          <IonList>
-                            <IonItem>
-                              <IonLabel>Tunai (Cash)</IonLabel>
-                              <IonText color="success">
-                                <strong>{rupiahFormat(summary.payment_summary.cash || 0)}</strong>
-                              </IonText>
-                            </IonItem>
-                            <IonItem>
-                              <IonLabel>Transfer Bank</IonLabel>
-                              <IonText color="primary">
-                                <strong>{rupiahFormat(summary.payment_summary.transfer_bank || 0)}</strong>
-                              </IonText>
-                            </IonItem>
-                            <IonItem>
-                              <IonLabel>QRIS</IonLabel>
-                              <IonText color="tertiary">
-                                <strong>{rupiahFormat(summary.payment_summary.qris || 0)}</strong>
-                              </IonText>
-                            </IonItem>
-                            <IonItem lines="none">
-                              <IonLabel>Shopee</IonLabel>
-                              <IonText color="warning">
-                                <strong>{rupiahFormat(summary.payment_summary.shopee || 0)}</strong>
-                              </IonText>
-                            </IonItem>
-                          </IonList>
+                          <h4 style={{ fontSize: "1rem", margin: "16px 0 8px 0", fontWeight: 700, color: "var(--ion-color-dark)", borderTop: "1px solid rgba(233,226,216,0.6)", paddingTop: "12px" }}>
+                            💳 Ringkasan Pembayaran
+                          </h4>
+                          <IonGrid className="payment-summary-grid">
+                            <IonRow>
+                              <IonCol size="6" sizeSm="3">
+                                <div className="payment-box cash">
+                                  <span className="payment-label">Tunai</span>
+                                  <span className="payment-val text-success">{rupiahFormat(summary.payment_summary.cash || 0)}</span>
+                                </div>
+                              </IonCol>
+                              <IonCol size="6" sizeSm="3">
+                                <div className="payment-box transfer">
+                                  <span className="payment-label">Transfer Bank</span>
+                                  <span className="payment-val text-primary">{rupiahFormat(summary.payment_summary.transfer_bank || 0)}</span>
+                                </div>
+                              </IonCol>
+                              <IonCol size="6" sizeSm="3">
+                                <div className="payment-box qris">
+                                  <span className="payment-label">QRIS</span>
+                                  <span className="payment-val text-tertiary">{rupiahFormat(summary.payment_summary.qris || 0)}</span>
+                                </div>
+                              </IonCol>
+                              <IonCol size="6" sizeSm="3">
+                                <div className="payment-box shopee">
+                                  <span className="payment-label">Shopee</span>
+                                  <span className="payment-val text-warning">{rupiahFormat(summary.payment_summary.shopee || 0)}</span>
+                                </div>
+                              </IonCol>
+                            </IonRow>
+                          </IonGrid>
                         </IonCol>
                       </IonRow>
                     )}
                   </IonGrid>
                 </IonCard>
+
+                {/* Pendapatan per Cabang (Admin) */}
                 {!isKasir && (
-                  <>
-                    <IonCard>
-                      <IonCardHeader>
-                        <IonCardTitle>🏪 Pendapatan per Cabang</IonCardTitle>
-                      </IonCardHeader>
-                      <IonCardContent>
-                        {loading ? (
-                          <IonSpinner name="lines-small" />
-                        ) : (
-                          <IonList>
-                            {incomeByBranch.map((branch, idx) => (
-                              <IonItem key={idx} style={{ alignItems: "flex-start" }}>
-                                <IonLabel className="ion-text-wrap">
-                                  <h2><strong>{branch.branch_name}</strong></h2>
-                                  <p style={{ marginTop: "4px" }}>
-                                    Total Pendapatan: <strong>{rupiahFormat(Number(branch.total_income || 0))}</strong> dari <strong>{branch.total_transactions}</strong> transaksi
-                                  </p>
-                                  <div style={{ marginTop: "8px", fontSize: "0.85rem" }}>
-                                    <IonText color="success">Tunai: <strong>{rupiahFormat(Number(branch.total_income_cash || 0))}</strong></IonText><br/>
-                                    <IonText color="primary">Transfer Bank: <strong>{rupiahFormat(Number(branch.total_income_transfer_bank || 0))}</strong></IonText><br/>
-                                    <IonText color="tertiary">QRIS: <strong>{rupiahFormat(Number(branch.total_income_qris || 0))}</strong></IonText><br/>
-                                    <IonText color="warning">Shopee: <strong>{rupiahFormat(Number(branch.total_income_shopee || 0))}</strong></IonText>
-                                  </div>
-                                </IonLabel>
-                              </IonItem>
-                            ))}
-                          </IonList>
-                        )}
-                      </IonCardContent>
-                    </IonCard>
-                    <IonCard>
-                      <IonCardHeader>
-                        <IonCardTitle>🧾 Ringkasan Omset</IonCardTitle>
-                      </IonCardHeader>
-                      <IonCardContent>
-                        {loading ? (
-                          <IonSpinner name="dots" />
-                        ) : (
-                          <IonGrid>
-                            <IonRow>
-                              <IonCol size="12">
-                                <IonChip color="medium">
-                                  <IonIcon icon={cashOutline} />
-                                  <IonLabel>
-                                    Minggu Ini:{" "}
-                                    {rupiahFormat(summary?.minggu_ini || 0)}
-                                  </IonLabel>
-                                </IonChip>
-                              </IonCol>
-                            </IonRow>
-                            <IonRow>
-                              <IonCol size="12">
-                                <IonChip color="tertiary">
-                                  <IonIcon icon={cashOutline} />
-                                  <IonLabel>
-                                    Bulan Ini:{" "}
-                                    {rupiahFormat(summary?.bulan_ini || 0)}
-                                  </IonLabel>
-                                </IonChip>
-                              </IonCol>
-                            </IonRow>
-                          </IonGrid>
-                        )}
-                      </IonCardContent>
-                    </IonCard>
-                  </>
+                  <IonCard className="branch-card">
+                    <IonCardHeader>
+                      <IonCardTitle>🏪 Pendapatan per Cabang</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {loading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                          <IonSpinner name="crescent" color="primary" />
+                        </div>
+                      ) : (
+                        <div className="branch-list-wrapper">
+                          {incomeByBranch.map((branch, idx) => (
+                            <div key={idx} className="branch-income-item">
+                              <div className="branch-income-header">
+                                <span className="branch-name">🏪 {branch.branch_name}</span>
+                                <span className="branch-total">{rupiahFormat(Number(branch.total_income || 0))}</span>
+                              </div>
+                              <p className="branch-meta">
+                                Total: <strong>{branch.total_transactions}</strong> transaksi
+                              </p>
+                              <div className="branch-payment-details">
+                                <span className="p-chip cash">Cash: {rupiahFormat(Number(branch.total_income_cash || 0))}</span>
+                                <span className="p-chip transfer">Transfer: {rupiahFormat(Number(branch.total_income_transfer_bank || 0))}</span>
+                                <span className="p-chip qris">QRIS: {rupiahFormat(Number(branch.total_income_qris || 0))}</span>
+                                <span className="p-chip shopee">Shopee: {rupiahFormat(Number(branch.total_income_shopee || 0))}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
                 )}
-              </IonCol>
-            </IonRow>
-            {!isKasir && (
-              <>
-                <IonRow>
-                  <IonCol size="12" sizeMd="6">
-                    <IonCard>
-                      <IonCardHeader>
-                        <IonCardTitle>
-                          🔥5 Produk Terlaris Hari ini
-                        </IonCardTitle>
-                      </IonCardHeader>
-                      <IonCardContent>
-                        {loading ? (
-                          <IonSpinner name="lines-small" />
-                        ) : topSellingProduct.length > 0 ? (
-                          <div style={{ width: "100%", height: 250 }}>
-                            <ResponsiveContainer minWidth={1} minHeight={1}>
-                              <PieChart>
-                                <Pie
-                                  data={topSellingProduct}
-                                  dataKey="total_sold"
-                                  nameKey="name"
-                                  cx="50%"
-                                  cy="50%"
-                                  outerRadius={80}
-                                  fill="#8884d8"
-                                  label
-                                >
-                                  {topSellingProduct.map((_, index) => (
-                                    <Cell
-                                      key={`cell-${index}`}
-                                      fill={COLORS[index % COLORS.length]}
-                                    />
-                                  ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend verticalAlign="bottom" height={36} />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                        ) : (
-                          <IonText>Belum ada data produk terlaris.</IonText>
-                        )}
-                      </IonCardContent>
-                    </IonCard>
-                  </IonCol>
-                </IonRow>
 
-                <IonRow>
-                  <IonCol size="12">
-                    <IonCard>
-                      <IonCardHeader>
-                        <IonCardTitle>📈 Omset 7 hari terakhir </IonCardTitle>
-                      </IonCardHeader>
-                      <IonCardContent>
-                        {loadingChart && <p>Memuat data chart...</p>}
-                        {errorChart && (
-                          <p style={{ color: "red" }}>{errorChart}</p>
-                        )}
+                {/* Omset 7 Hari Terakhir Chart */}
+                {!isKasir && (
+                  <IonCard className="chart-card">
+                    <IonCardHeader>
+                      <IonCardTitle>📈 Omset 7 Hari Terakhir</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {loadingChart && (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                          <IonSpinner name="crescent" color="primary" />
+                        </div>
+                      )}
+                      {errorChart && (
+                        <p style={{ color: "var(--ion-color-danger)", textAlign: 'center' }}>{errorChart}</p>
+                      )}
 
-                        {!loadingChart && !errorChart && (
-                          <ResponsiveContainer width="100%" height={300} minWidth={1}>
-                            <BarChart data={chartData}>
-                              <CartesianGrid
-                                stroke="#ccc"
-                                strokeDasharray="5 5"
-                              />
+                      {!loadingChart && !errorChart && (
+                        <div style={{ width: "100%", height: 320 }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
+                              <CartesianGrid stroke="rgba(233, 226, 216, 0.4)" strokeDasharray="3 3" vertical={false} />
                               <XAxis
                                 dataKey="date"
-                                angle={-50}
+                                angle={-30}
                                 textAnchor="end"
+                                tick={{ fill: 'var(--ion-color-dark)', fontSize: 11, fontWeight: 500 }}
+                                axisLine={{ stroke: 'rgba(233, 226, 216, 0.8)' }}
+                                tickLine={false}
                               />
                               <YAxis
-                                tickFormatter={(value) =>
-                                  `${value / 1_000_000}jt`
-                                }
+                                tickFormatter={(value) => `${value / 1_000_000}jt`}
+                                tick={{ fill: 'var(--ion-color-dark)', fontSize: 11 }}
+                                axisLine={{ stroke: 'rgba(233, 226, 216, 0.8)' }}
+                                tickLine={false}
                               />
                               <Tooltip
-                                formatter={(value: number) =>
-                                  `Rp.${value.toLocaleString()}`
-                                }
+                                contentStyle={{
+                                  background: '#ffffff',
+                                  borderRadius: '12px',
+                                  border: '1px solid rgba(233, 226, 216, 0.8)',
+                                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
+                                }}
+                                formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Total Sales']}
                               />
                               <Bar
                                 dataKey="total_sales"
-                                fill="#3880ff"
+                                fill="var(--ion-color-primary)"
+                                radius={[6, 6, 0, 0]}
+                                maxBarSize={48}
                               />
                             </BarChart>
                           </ResponsiveContainer>
-                        )}
-                      </IonCardContent>
-                    </IonCard>
-                  </IonCol>
-                </IonRow>
-              </>
-            )}
+                        </div>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
+                )}
+              </IonCol>
+
+              {/* Kolom Samping / Kanan (Wider screens: 4/12, Mobile: 12/12) */}
+              <IonCol size="12" sizeLg="4">
+                {/* Ringkasan Omset */}
+                {!isKasir && (
+                  <IonCard className="omset-card">
+                    <IonCardHeader>
+                      <IonCardTitle>🧾 Ringkasan Omset</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {loading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                          <IonSpinner name="dots" color="primary" />
+                        </div>
+                      ) : (
+                        <div className="omset-chips-container">
+                          <div className="omset-box week">
+                            <span className="omset-icon">📅</span>
+                            <div className="omset-info">
+                              <span className="omset-label">Minggu Ini</span>
+                              <span className="omset-value">{rupiahFormat(summary?.minggu_ini || 0)}</span>
+                            </div>
+                          </div>
+                          <div className="omset-box month">
+                            <span className="omset-icon">📊</span>
+                            <div className="omset-info">
+                              <span className="omset-label">Bulan Ini</span>
+                              <span className="omset-value">{rupiahFormat(summary?.bulan_ini || 0)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
+                )}
+
+                {/* 5 Produk Terlaris */}
+                {!isKasir && (
+                  <IonCard className="pie-card">
+                    <IonCardHeader>
+                      <IonCardTitle>🔥 5 Produk Terlaris Hari Ini</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {loading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                          <IonSpinner name="crescent" color="primary" />
+                        </div>
+                      ) : topSellingProduct.length > 0 ? (
+                        <div style={{ width: "100%", height: 280 }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={topSellingProduct}
+                                dataKey="total_sold"
+                                nameKey="name"
+                                cx="50%"
+                                cy="45%"
+                                innerRadius={50}
+                                outerRadius={80}
+                                paddingAngle={3}
+                                fill="#8884d8"
+                                labelLine={false}
+                                label={({ name, percent }) => `${name.substring(0, 10)}... (${(percent * 100).toFixed(0)}%)`}
+                              >
+                                {topSellingProduct.map((_, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                  />
+                                ))}
+                              </Pie>
+                              <Tooltip
+                                contentStyle={{
+                                  background: '#ffffff',
+                                  borderRadius: '12px',
+                                  border: '1px solid rgba(233, 226, 216, 0.8)'
+                                }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      ) : (
+                        <p style={{ textAlign: 'center', color: 'var(--ion-color-medium)' }}>Belum ada data produk terlaris.</p>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
+                )}
+              </IonCol>
+            </IonRow>
           </IonGrid>
           {/* Error Message */}
           <IonToast

@@ -1,33 +1,211 @@
+/* Premium Dashboard View Styling */
+
 .icon-card ion-icon {
-  width: 100%;
-  font-size: 7rem;
+  font-size: 3.5rem;
+  color: var(--ion-color-primary);
+  filter: drop-shadow(0 6px 12px rgba(79, 115, 137, 0.2));
+  animation: pulseIcon 3s ease-in-out infinite;
 }
 
-ion-card {
-  padding: 10px;
-}
-
-ion-card-title {
-  font-size: 1.2rem;
-}
-
-.details-card {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-}
-
-.details-card h5 {
-  font-size: 0.9rem;
-  font-weight: 600;
+@keyframes pulseIcon {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .details-card h2 {
-  font-size: 1.7rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--ion-color-primary);
+  letter-spacing: -0.03em;
+  margin: 6px 0;
+}
+
+.details-card h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* Payment Summary Sub-Grid */
+.payment-summary-grid {
+  padding: 0;
+}
+
+.payment-box {
+  background: var(--ion-color-light);
+  border: 1px solid rgba(233, 226, 216, 0.6);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: var(--app-transition);
+}
+
+.payment-box:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  border-color: var(--ion-color-secondary-tint);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+}
+
+.payment-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-slate-blue);
+}
+
+.payment-val {
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
-.details-card h4 {
-  font-size: 1rem;
-  font-weight: 400;
+/* Color classes for payment status */
+.text-success { color: var(--ion-color-success); }
+.text-primary { color: var(--ion-color-primary); }
+.text-tertiary { color: var(--ion-color-tertiary); }
+.text-warning { color: var(--ion-color-warning); }
+
+/* Branch Income List */
+.branch-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.branch-income-item {
+  background: rgba(118, 139, 158, 0.03);
+  border: 1px solid rgba(233, 226, 216, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+  transition: var(--app-transition);
+}
+
+.branch-income-item:hover {
+  background: #ffffff;
+  border-color: rgba(118, 139, 158, 0.2);
+  box-shadow: var(--app-card-shadow-hover);
+}
+
+.branch-income-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.branch-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ion-color-dark);
+}
+
+.branch-total {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--ion-color-primary);
+}
+
+.branch-meta {
+  font-size: 0.85rem;
+  color: var(--color-slate-blue);
+  margin: 0 0 10px 0;
+}
+
+.branch-payment-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.p-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(233, 226, 216, 0.5);
+  border: 1px solid rgba(233, 226, 216, 0.8);
+}
+
+.p-chip.cash { color: var(--ion-color-success); background-color: rgba(90, 140, 106, 0.08); border-color: rgba(90, 140, 106, 0.15); }
+.p-chip.transfer { color: var(--ion-color-primary); background-color: rgba(79, 115, 137, 0.08); border-color: rgba(79, 115, 137, 0.15); }
+.p-chip.qris { color: var(--ion-color-tertiary); background-color: rgba(88, 110, 121, 0.08); border-color: rgba(88, 110, 121, 0.15); }
+.p-chip.shopee { color: var(--ion-color-warning); background-color: rgba(217, 160, 91, 0.08); border-color: rgba(217, 160, 91, 0.15); }
+
+/* Omset Summary Card (Right column) */
+.omset-chips-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.omset-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(233, 226, 216, 0.5);
+  transition: var(--app-transition);
+}
+
+.omset-box:hover {
+  transform: translateX(4px);
+}
+
+.omset-box.week {
+  background: rgba(79, 115, 137, 0.04);
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.omset-box.month {
+  background: rgba(88, 110, 121, 0.04);
+  border-left: 4px solid var(--ion-color-tertiary);
+}
+
+.omset-icon {
+  font-size: 1.6rem;
+}
+
+.omset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.omset-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-slate-blue);
+}
+
+.omset-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ion-color-dark);
+}
+
+/* Pie card and Chart adjustments */
+.pie-card {
+  overflow: visible;
+}
+
+.dashboard-grid {
+  padding: 8px;
+}
+
+@media (min-width: 992px) {
+  .dashboard-grid {
+    padding: 16px;
+  }
 }

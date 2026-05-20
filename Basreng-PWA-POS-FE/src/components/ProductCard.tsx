@@ -93,10 +93,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <IonCard className="product-card">
       {/* IMAGE */}
-      <img
-        src={`${BASE_API_URL}/uploads/products/${product.img}`}
-        className="product-img"
-      />
+      <div className="product-img-container">
+        <img
+          src={`${BASE_API_URL}/uploads/products/${product.img}`}
+          className="product-img"
+        />
+      </div>
 
       <IonCardContent>
         {/* NAME */}
