@@ -22,6 +22,7 @@ import { useAuth } from "../hooks/useAuthCookie";
 import { warning } from "ionicons/icons";
 import AlertInfo, { AlertState } from "../components/AlertInfo";
 import LocationBranchModal from "../components/LocationBranchModal";
+import { Branch } from "../hooks/restAPIBranch";
 
 interface LocationState {
   isTokenExpired?: boolean;
@@ -37,7 +38,7 @@ const LoginForm: React.FC = () => {
     hideButton: false,
   });
 
-  const { login, token, role } = useAuth();
+  const { login, token, role, setBranchAfterLocation } = useAuth();
   const history = useHistory();
   const location = useLocation<LocationState>();
   const [isTokenExpired, setIsTokenExpired] = useState(
@@ -48,6 +49,7 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState<string | undefined>();
   const [selectedBranchName, setSelectedBranchName] = useState<string>("");
+  const [selectedBranchData, setSelectedBranchData] = useState<Branch | undefined>();
   const [showLocationModal, setShowLocationModal] = useState(false);
   
   const resetForm = () => {
@@ -109,6 +111,9 @@ const LoginForm: React.FC = () => {
           });
 
           login(token);
+          if (selectedBranchData?.branch_id) {
+            setBranchAfterLocation(String(selectedBranchData.branch_id), selectedBranchData);
+          }
           setIsTokenExpired(false);
 
           setTimeout(() => {
@@ -227,9 +232,10 @@ const LoginForm: React.FC = () => {
       <LocationBranchModal
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
-        onBranchSelected={(id, name) => {
+        onBranchSelected={(id, name, branchData) => {
           setSelectedBranchId(id);
           setSelectedBranchName(name);
+          setSelectedBranchData(branchData);
         }}
       />
     </IonPage>
