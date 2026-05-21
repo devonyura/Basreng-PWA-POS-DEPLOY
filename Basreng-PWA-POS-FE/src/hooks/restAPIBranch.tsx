@@ -20,22 +20,35 @@ export interface BranchPayload {
   longitude?: string;
 }
 
+const getAuthHeaders = () => {
+  const TOKEN = Cookies.get("token");
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (TOKEN) {
+    headers.Authorization = `Bearer ${TOKEN}`;
+  }
+
+  return headers;
+};
+
 // Ambil semua cabang
 export const getBranches = async (): Promise<Branch[] | any> => {
   try {
-    const TOKEN = Cookies.get("token");
-
     const apiOnline = await isApiOnline();
     if (!apiOnline) throw new Error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
 
     const response = await fetch(`${BASE_API_URL}/branch`, {
       method: "GET",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${TOKEN}`,
-      },
+      headers: getAuthHeaders(),
     });
+
+    if (response.status === 401) {
+      console.warn("Daftar cabang tidak bisa diambil sebelum login.");
+      return [];
+    }
 
     checkOKResponse(response);
 
@@ -177,19 +190,19 @@ export const deleteBranch = async (id: string): Promise<ApiResponse> => {
 // Ambil cabang terdekat berdasarkan lokasi
 export const getNearestBranch = async (lat: number, lng: number): Promise<Branch | null> => {
   try {
-    const TOKEN = Cookies.get("token");
-
     const apiOnline = await isApiOnline();
     if (!apiOnline) throw new Error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
 
     const response = await fetch(`${BASE_API_URL}/api/branch/nearest?lat=${lat}&lng=${lng}`, {
       method: "GET",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${TOKEN}`,
-      },
+      headers: getAuthHeaders(),
     });
+
+    if (response.status === 401) {
+      console.warn("Pencocokan cabang terdekat tidak tersedia sebelum login.");
+      return null;
+    }
 
     if (response.status === 404) return null;
 
