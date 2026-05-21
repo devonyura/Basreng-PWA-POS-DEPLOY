@@ -162,11 +162,11 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchData();
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchData();
+  //   }
+  // }, [token]);
 
   // setup Alert
   const [alert, setAlert] = useState<AlertState>({

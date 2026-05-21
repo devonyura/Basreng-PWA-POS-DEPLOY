@@ -49,13 +49,7 @@ const LoginForm: React.FC = () => {
   const [selectedBranchId, setSelectedBranchId] = useState<string | undefined>();
   const [selectedBranchName, setSelectedBranchName] = useState<string>("");
   const [showLocationModal, setShowLocationModal] = useState(false);
-
-  useEffect(() => {
-    if (token && role) {
-      history.replace("/dashboard", { isTokenExpired: true });
-    }
-  }, [token, role, history]);
-
+  
   const resetForm = () => {
     setUsername("");
     setPassword("");
