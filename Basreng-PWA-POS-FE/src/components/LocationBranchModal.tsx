@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   IonModal,
   IonContent,
@@ -30,22 +30,45 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
   const [statusMessage, setStatusMessage] = useState('Menunggu lokasi akurat (6 detik)...');
   const [branches, setBranches] = useState<Branch[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState<string | undefined>(undefined);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
+  const processIdRef = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       startLocationProcess();
     }
+
+    return () => {
+      processIdRef.current += 1;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   const startLocationProcess = async () => {
+    const processId = processIdRef.current + 1;
+    processIdRef.current = processId;
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     setLoading(true);
     setShowForm(false);
+    setSelectedBranchId(undefined);
+    setSelectedBranch(undefined);
     setStatusMessage('Menunggu lokasi akurat (6 detik)...');
 
     // Ambil daftar semua cabang dulu untuk manual selection nanti
     try {
       const allBranches = await getBranches();
+      if (processIdRef.current !== processId) return;
+
       if (Array.isArray(allBranches)) {
         setBranches(allBranches);
       }
@@ -54,7 +77,9 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
     }
 
     // Tunggu 3 detik sesuai permintaan
-    setTimeout(async () => {
+    timeoutRef.current = setTimeout(async () => {
+      if (processIdRef.current !== processId) return;
+
       setStatusMessage('Mengambil titik lokasi...');
       
       if (!navigator.geolocation) {
@@ -66,14 +91,26 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
+          if (processIdRef.current !== processId) return;
+
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           
           setStatusMessage(`Lokasi akurat terdeteksi (${latitude.toFixed(4)}, ${longitude.toFixed(4)}). Mencari cabang terdekat...`);
           try {
             const nearest = await getNearestBranch(latitude, longitude);
+            if (processIdRef.current !== processId) return;
+
             if (nearest && nearest.branch_id) {
-              setSelectedBranchId(nearest.branch_id);
+              setSelectedBranchId(String(nearest.branch_id));
+              setSelectedBranch(nearest);
+              setBranches(prevBranches => {
+                const branchExists = prevBranches.some(
+                  branch => String(branch.branch_id) === String(nearest.branch_id)
+                );
+
+                return branchExists ? prevBranches : [nearest, ...prevBranches];
+              });
               setStatusMessage('Cabang terdekat ditemukan!');
             } else {
               setStatusMessage('Tidak ada cabang dalam radius 100m. Silahkan pilih manual.');
@@ -87,8 +124,9 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
           }
         },
         (error) => {
+          if (processIdRef.current !== processId) return;
+
           console.error('Geolocation error:');
-          setStatusMessage('Gagal mendapatkan lokasi. Silahkan pilih manual.');
           setStatusMessage('Silahkan pilih Cabang:');
           setLoading(false);
           setShowForm(true);
@@ -101,15 +139,24 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
   const handleConfirm = () => {
     if (!selectedBranchId) return;
 
-    const selectedBranch = branches.find(b => String(b.branch_id) === String(selectedBranchId));
-    if (selectedBranch && selectedBranch.branch_id) {
-      onBranchSelected(selectedBranch.branch_id, selectedBranch.branch_name);
+    const branchToConfirm = branches.find(b => String(b.branch_id) === String(selectedBranchId)) || selectedBranch;
+    if (branchToConfirm && branchToConfirm.branch_id && branchToConfirm.branch_name) {
+      onBranchSelected(String(branchToConfirm.branch_id), branchToConfirm.branch_name);
+      onClose();
+      return;
     }
-    onClose();
+
+    setStatusMessage('Data cabang belum lengkap. Silahkan pilih cabang dari daftar.');
+  };
+
+  const handleBranchChange = (branchId: string) => {
+    const branch = branches.find(b => String(b.branch_id) === String(branchId));
+    setSelectedBranchId(branchId);
+    setSelectedBranch(branch);
   };
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+    <IonModal isOpen={isOpen} onDidDismiss={onClose} backdropDismiss={false}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Pilih Cabang</IonTitle>
@@ -141,7 +188,7 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
                 <IonSelect 
                   value={selectedBranchId} 
                   placeholder="Pilih Cabang"
-                  onIonChange={e => setSelectedBranchId(e.detail.value)}
+                  onIonChange={e => handleBranchChange(e.detail.value)}
                 >
                   {branches.map(branch => (
                     <IonSelectOption key={branch.branch_id} value={branch.branch_id}>
