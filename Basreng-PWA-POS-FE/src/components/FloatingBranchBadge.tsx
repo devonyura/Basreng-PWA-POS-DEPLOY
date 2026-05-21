@@ -14,7 +14,7 @@ import "./FloatingBranchBadge.css";
 
 const FloatingBranchBadge: React.FC = () => {
   const location = useLocation();
-  const { token, branchData, setBranchAfterLocation } = useAuth();
+  const { token, branchID, branchData, setBranchAfterLocation } = useAuth();
   const branchSelectRef = useRef<HTMLIonSelectElement>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [isLoadingBranches, setIsLoadingBranches] = useState(false);
@@ -25,7 +25,16 @@ const FloatingBranchBadge: React.FC = () => {
     return null;
   }
 
-  const branchName = branchData?.branch_name || "Pilih Cabang";
+  const selectedBranchId = branchData?.branch_id
+    ? String(branchData.branch_id)
+    : branchID
+      ? String(branchID)
+      : undefined;
+  const selectedBranchFromList = branches.find(
+    (branch) => String(branch.branch_id) === selectedBranchId,
+  );
+  const branchName =
+    branchData?.branch_name || selectedBranchFromList?.branch_name || "Pilih Cabang";
 
   const openBranchSelect = async () => {
     if (isLoadingBranches) return;
@@ -40,7 +49,19 @@ const FloatingBranchBadge: React.FC = () => {
       const branchList = await getBranches();
       const nextBranches = Array.isArray(branchList) ? branchList : [];
 
-      setBranches(nextBranches);
+      setBranches(() => {
+        if (
+          branchData?.branch_id &&
+          branchData.branch_name &&
+          !nextBranches.some(
+            (branch) => String(branch.branch_id) === String(branchData.branch_id),
+          )
+        ) {
+          return [branchData, ...nextBranches];
+        }
+
+        return nextBranches;
+      });
 
       requestAnimationFrame(() => {
         branchSelectRef.current?.open();
@@ -92,7 +113,7 @@ const FloatingBranchBadge: React.FC = () => {
         ref={branchSelectRef}
         className="floating-branch-select-host"
         interface="popover"
-        value={branchData?.branch_id}
+        value={selectedBranchId}
         aria-label="Pilih cabang aktif"
         onIonChange={(event) => handleBranchChange(event.detail.value)}
       >

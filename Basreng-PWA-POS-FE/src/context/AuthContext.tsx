@@ -59,15 +59,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     Cookies.get("branch_data") ? JSON.parse(Cookies.get("branch_data")!) : null,
   );
 
+  const isValidBranchData = (data: any): data is BranchData => {
+    return Boolean(data?.branch_id && data?.branch_name);
+  };
+
+  const normalizeBranchData = (data: BranchData): BranchData => ({
+    ...data,
+    branch_id: String(data.branch_id),
+  });
+
   const fetchBranchData = async (id: string) => {
     const data = await getBranchById(id);
-    if (!data) return;
+    if (!isValidBranchData(data)) return;
 
-    Cookies.set("branch_data", JSON.stringify(data), {
+    const normalizedData = normalizeBranchData(data);
+
+    Cookies.set("branch_data", JSON.stringify(normalizedData), {
       expires: COOKIE_EXPIRATION_MINUTES / (24 * 60),
     });
 
-    setBranchData(data);
+    setBranchData(normalizedData);
   };
 
   const login = (jwtToken: string) => {
@@ -113,12 +124,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const setBranchAfterLocation = (id: string, data: BranchData) => {
+    const normalizedData = normalizeBranchData({
+      ...data,
+      branch_id: id,
+    });
+
     Cookies.set("branch_id", id, { expires: COOKIE_EXPIRATION_MINUTES / (24 * 60) });
-    Cookies.set("branch_data", JSON.stringify(data), {
+    Cookies.set("branch_data", JSON.stringify(normalizedData), {
       expires: COOKIE_EXPIRATION_MINUTES / (24 * 60),
     });
     setBranchID(id);
-    setBranchData(data);
+    setBranchData(normalizedData);
   };
 
   useEffect(() => {
