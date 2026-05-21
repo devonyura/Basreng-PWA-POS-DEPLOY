@@ -142,11 +142,21 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
     const branchToConfirm = branches.find(b => String(b.branch_id) === String(selectedBranchId)) || selectedBranch;
     if (branchToConfirm && branchToConfirm.branch_id && branchToConfirm.branch_name) {
       onBranchSelected(String(branchToConfirm.branch_id), branchToConfirm.branch_name);
-      onClose();
+      handleClose();
       return;
     }
 
     setStatusMessage('Data cabang belum lengkap. Silahkan pilih cabang dari daftar.');
+  };
+
+  const handleClose = () => {
+    processIdRef.current += 1;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    onClose();
   };
 
   const handleBranchChange = (branchId: string) => {
@@ -156,12 +166,12 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
   };
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} backdropDismiss={false}>
+    <IonModal isOpen={isOpen} backdropDismiss={false} canDismiss={false}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Pilih Cabang</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={onClose}>
+            <IonButton onClick={handleClose}>
               <IonIcon icon={closeOutline} />
             </IonButton>
           </IonButtons>
