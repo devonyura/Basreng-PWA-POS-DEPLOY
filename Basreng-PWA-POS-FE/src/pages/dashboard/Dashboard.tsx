@@ -23,6 +23,8 @@ import {
   IonChip,
   IonSpinner,
   IonToast,
+  IonRefresher,
+  IonRefresherContent,
   useIonViewDidEnter,
   useIonViewDidLeave,
 } from "@ionic/react";
@@ -184,6 +186,14 @@ const Dashboard: React.FC = () => {
     }
   }, [token, role]);
 
+  const handleRefresh = async (event: CustomEvent) => {
+    try {
+      await fetchData();
+    } finally {
+      event.detail.complete();
+    }
+  };
+
   // setup Alert
   const [alert, setAlert] = useState<AlertState>({
     showAlert: false,
@@ -280,6 +290,9 @@ const Dashboard: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
           <IonHeader collapse="condense">
             <IonToolbar>
               <IonTitle size="large">Ringkasan Hari ini</IonTitle>

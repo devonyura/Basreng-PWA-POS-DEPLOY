@@ -10,6 +10,8 @@ import {
   useIonViewWillEnter,
   useIonViewWillLeave,
   IonAlert,
+  IonRefresher,
+  IonRefresherContent,
 } from "@ionic/react";
 
 // State, History etc
@@ -78,6 +80,22 @@ const KasirPage: React.FC = () => {
     dispatch(clearCart());
   }, [dispatch]);
 
+  const refreshKasirData = async () => {
+    await Promise.all([
+      dispatch(fetchProducts()),
+      dispatch(fetchCategories()),
+      dispatch(fetchSubCategories()),
+    ]);
+  };
+
+  const handleRefresh = async (event: CustomEvent) => {
+    try {
+      await refreshKasirData();
+    } finally {
+      event.detail.complete();
+    }
+  };
+
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
@@ -133,6 +151,9 @@ const KasirPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
         <h2>Pilih Item yang akan dibeli:</h2>
 
         <IonSegment
