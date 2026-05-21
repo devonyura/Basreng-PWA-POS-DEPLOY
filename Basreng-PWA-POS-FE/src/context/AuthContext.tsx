@@ -77,13 +77,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     Cookies.set("role", payload.data.role);
     Cookies.set("username", payload.data.username); // ✅ fix bug
     Cookies.set("id_user", payload.data.id);
-    Cookies.set("branch_id", payload.data.branch_id); 
+    if (payload.data.branch_id) {
+      Cookies.set("branch_id", payload.data.branch_id);
+    }
 
     setToken(jwtToken);
     setRole(payload.data.role);
     setUsername(payload.data.username);
     setIdUser(payload.data.id);
-    setBranchID(payload.data.branch_id); 
+    if (payload.data.branch_id) {
+      setBranchID(payload.data.branch_id);
+    }
 
     if (payload.data.branch_id) {
       fetchBranchData(payload.data.branch_id);
