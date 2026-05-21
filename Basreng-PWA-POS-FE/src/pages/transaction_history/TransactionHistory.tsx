@@ -8,6 +8,8 @@ import {
   IonAlert,
   IonButton,
   IonIcon,
+  IonRefresher,
+  IonRefresherContent,
   useIonViewWillEnter,
   useIonViewWillLeave,
 } from "@ionic/react";
@@ -156,6 +158,14 @@ const TransactionHistory: React.FC = () => {
     });
   }, [transactions]);
 
+  const handleRefresh = async (event: CustomEvent) => {
+    try {
+      await reload();
+    } finally {
+      event.detail.complete();
+    }
+  };
+
   // === Loading section
   if (isLoading) {
     return <LoadingScreen />;
@@ -186,6 +196,9 @@ const TransactionHistory: React.FC = () => {
             />
           </IonHeader>
           <IonContent className="ion-padding">
+            <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+              <IonRefresherContent />
+            </IonRefresher>
             <TransactionList
               data={sortedTransactions}
               onClickItem={(code) => setSelectedTransactionCode(code)}
