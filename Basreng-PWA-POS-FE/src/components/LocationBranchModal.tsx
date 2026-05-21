@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonModal,
   IonContent,
@@ -17,131 +17,71 @@ import {
   IonIcon
 } from '@ionic/react';
 import { closeOutline } from 'ionicons/icons';
-import { getBranches, getNearestBranch, Branch } from '../hooks/restAPIBranch';
+import { getBranches, Branch } from '../hooks/restAPIBranch';
 
 interface LocationBranchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onBranchSelected: (branchId: string, branchName: string) => void;
+  onBranchSelected: (branchId: string, branchName: string, branchData?: Branch) => void;
 }
 
 const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClose, onBranchSelected }) => {
   const [loading, setLoading] = useState(true);
-  const [statusMessage, setStatusMessage] = useState('Menunggu lokasi akurat (6 detik)...');
+  const [statusMessage, setStatusMessage] = useState('Memuat daftar cabang...');
   const [branches, setBranches] = useState<Branch[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState<string | undefined>(undefined);
-  const [selectedBranch, setSelectedBranch] = useState<Branch | undefined>(undefined);
-  const [showForm, setShowForm] = useState(false);
-  const processIdRef = useRef(0);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (isOpen) {
-      startLocationProcess();
+      loadBranches(() => cancelled);
     }
 
     return () => {
-      processIdRef.current += 1;
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
+      cancelled = true;
     };
   }, [isOpen]);
 
-  const startLocationProcess = async () => {
-    const processId = processIdRef.current + 1;
-    processIdRef.current = processId;
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-
+  const loadBranches = async (isCancelled: () => boolean) => {
     setLoading(true);
-    setShowForm(false);
     setSelectedBranchId(undefined);
-    setSelectedBranch(undefined);
-    setStatusMessage('Menunggu lokasi akurat (6 detik)...');
+    setStatusMessage('Memuat daftar cabang...');
 
-    // Ambil daftar semua cabang dulu untuk manual selection nanti
     try {
       const allBranches = await getBranches();
-      if (processIdRef.current !== processId) return;
+      if (isCancelled()) return;
 
       if (Array.isArray(allBranches)) {
         setBranches(allBranches);
+        setStatusMessage(
+          allBranches.length > 0
+            ? 'Silahkan pilih cabang.'
+            : 'Daftar cabang kosong. Silahkan coba lagi.'
+        );
+      } else {
+        setBranches([]);
+        setStatusMessage('Gagal memuat daftar cabang. Silahkan coba lagi.');
       }
     } catch (error) {
       console.error('Gagal mengambil daftar cabang:', error);
-    }
-
-    // Tunggu 3 detik sesuai permintaan
-    timeoutRef.current = setTimeout(async () => {
-      if (processIdRef.current !== processId) return;
-
-      setStatusMessage('Mengambil titik lokasi...');
-      
-      if (!navigator.geolocation) {
-        setStatusMessage('Geolocation tidak didukung oleh browser ini.');
-        setLoading(false);
-        setShowForm(true);
-        return;
+      if (!isCancelled()) {
+        setBranches([]);
+        setStatusMessage('Gagal memuat daftar cabang. Silahkan coba lagi.');
       }
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          if (processIdRef.current !== processId) return;
-
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          
-          setStatusMessage(`Lokasi akurat terdeteksi (${latitude.toFixed(4)}, ${longitude.toFixed(4)}). Mencari cabang terdekat...`);
-          try {
-            const nearest = await getNearestBranch(latitude, longitude);
-            if (processIdRef.current !== processId) return;
-
-            if (nearest && nearest.branch_id) {
-              setSelectedBranchId(String(nearest.branch_id));
-              setSelectedBranch(nearest);
-              setBranches(prevBranches => {
-                const branchExists = prevBranches.some(
-                  branch => String(branch.branch_id) === String(nearest.branch_id)
-                );
-
-                return branchExists ? prevBranches : [nearest, ...prevBranches];
-              });
-              setStatusMessage('Cabang terdekat ditemukan!');
-            } else {
-              setStatusMessage('Tidak ada cabang dalam radius 100m. Silahkan pilih manual.');
-            }
-          } catch (error) {
-            console.error('Error fetching nearest branch:', error);
-            setStatusMessage('Gagal mencari cabang terdekat. Silahkan pilih manual.');
-          } finally {
-            setLoading(false);
-            setShowForm(true);
-          }
-        },
-        (error) => {
-          if (processIdRef.current !== processId) return;
-
-          console.error('Geolocation error:');
-          setStatusMessage('Silahkan pilih Cabang:');
-          setLoading(false);
-          setShowForm(true);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    }, 3000);
+    } finally {
+      if (!isCancelled()) {
+        setLoading(false);
+      }
+    }
   };
 
   const handleConfirm = () => {
     if (!selectedBranchId) return;
 
-    const branchToConfirm = branches.find(b => String(b.branch_id) === String(selectedBranchId)) || selectedBranch;
+    const branchToConfirm = branches.find(b => String(b.branch_id) === String(selectedBranchId));
     if (branchToConfirm && branchToConfirm.branch_id && branchToConfirm.branch_name) {
-      onBranchSelected(String(branchToConfirm.branch_id), branchToConfirm.branch_name);
+      onBranchSelected(String(branchToConfirm.branch_id), branchToConfirm.branch_name, branchToConfirm);
       handleClose();
       return;
     }
@@ -150,23 +90,15 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
   };
 
   const handleClose = () => {
-    processIdRef.current += 1;
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-
     onClose();
   };
 
   const handleBranchChange = (branchId: string) => {
-    const branch = branches.find(b => String(b.branch_id) === String(branchId));
     setSelectedBranchId(branchId);
-    setSelectedBranch(branch);
   };
 
   return (
-    <IonModal isOpen={isOpen} backdropDismiss={false} canDismiss={false}>
+    <IonModal isOpen={isOpen} backdropDismiss={false} onDidDismiss={onClose}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Pilih Cabang</IonTitle>
@@ -180,7 +112,7 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
       <IonContent className="ion-padding ion-text-center">
         <div style={{ marginTop: '10%', padding: '20px' }}>
           <IonText color="primary">
-            <h2>Menentukan Lokasi Cabang</h2>
+            <h2>Pilih Cabang</h2>
           </IonText>
           
           {loading && (
@@ -190,7 +122,7 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
             </div>
           )}
 
-          {showForm && (
+          {!loading && (
             <div style={{ marginTop: '30px' }}>
               <p>{statusMessage}</p>
               <IonItem lines="full" style={{ marginTop: '20px' }}>
@@ -211,13 +143,13 @@ const LocationBranchModal: React.FC<LocationBranchModalProps> = ({ isOpen, onClo
           )}
         </div>
       </IonContent>
-      {showForm && (
+      {!loading && (
         <IonFooter>
           <IonToolbar>
             <IonButton 
               expand="full" 
               onClick={handleConfirm} 
-              disabled={!selectedBranchId}
+              disabled={!selectedBranchId || branches.length === 0}
               color="primary"
             >
               OK - Pilih Cabang
