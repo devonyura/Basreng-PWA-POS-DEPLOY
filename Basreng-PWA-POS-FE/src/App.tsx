@@ -56,6 +56,7 @@ import UsersListPage from "./pages/users/UsersListPage";
 import ReportPage from "./pages/reports/ReportPage";
 import ResellerListPage from "./pages/resellers/ResellerListPage";
 import PackageListPage from "./pages/products/PackageListPage";
+import FloatingBranchBadge from "./components/FloatingBranchBadge";
 
 setupIonicReact();
 
@@ -65,6 +66,7 @@ const App: React.FC = () => {
       <IonApp>
         <IonReactRouter>
           <IonTabs>
+            <FloatingBranchBadge />
             <IonRouterOutlet>
               <Route exact path={`/login`}>
                 <LoginForm />

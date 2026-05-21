@@ -75,9 +75,12 @@ const CustomerInfoForm: React.FC<Props> = ({
         ></IonTextarea>
       </IonItem>
       <IonItem>
+        <IonLabel position="stacked">
+          Catatan
+          <p>Contoh: Pesanan dibayar 50K</p>
+        </IonLabel>
         <IonTextarea
           name="notes"
-          placeholder="Catatan: contoh: Pesanan dibayar 50K"
           autoGrow={true}
           value={customerInfo.notes}
           onIonInput={(e) =>

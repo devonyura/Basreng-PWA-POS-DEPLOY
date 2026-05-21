@@ -549,13 +549,24 @@ const DetailOrder: React.FC = () => {
                 <IonCheckbox
                   id="online-check"
                   checked={isOnlineOrder}
-                  onIonChange={(e) => setIsOnlineOrder(e.detail.checked)}
+                  onIonChange={(e) => {
+                    const checked = e.detail.checked;
+                    setIsOnlineOrder(checked);
+                    if (!checked) {
+                      setCustomerInfo({
+                        name: "",
+                        phone: "",
+                        address: "",
+                        notes: "",
+                      });
+                    }
+                  }}
                   disabled={isShopeeOrder}
                 >
                   Antar Maxim?
                 </IonCheckbox>
               </IonItem>
-              {!isShopeeOrder && (
+              {isOnlineOrder && (
                 <CustomerInfoForm
                   isOnlineOrder={isOnlineOrder}
                   customerInfo={customerInfo}

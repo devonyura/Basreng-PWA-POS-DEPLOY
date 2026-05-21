@@ -106,29 +106,40 @@ const Dashboard: React.FC = () => {
   const [errorChart, setErrorChart] = useState<string | null>(null);
   const { logout, role, username, branchID, token, branchData } = useAuth();
 
+  const normalizeArrayResponse = <T,>(response: T[] | { data?: T[] } | null | undefined): T[] => {
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response?.data)) return response.data;
+    return [];
+  };
+
   const fetchData = async () => {
     console.log("username", username);
     setLoading(true);
     setLoadingChart(true);
+    setError(null);
+    setErrorChart(null);
     try {
       try {
         const summaryData = await getTransactionSummary();
         console.log("summaryData:", summaryData);
-        setSummary(summaryData);
+        if (summaryData) {
+          setSummary(summaryData);
+        }
       } catch (e) {
         console.warn("Gagal ambil ringkasan transaksi:", e);
       }
 
       try {
         const incomeData = await getIncomeByBranch();
-        setIncomeByBranch(incomeData);
+        setIncomeByBranch(normalizeArrayResponse<BranchIncome>(incomeData));
       } catch (e) {
         console.warn("Gagal ambil pendapatan cabang:", e);
+        setIncomeByBranch([]);
       }
 
       try {
         const res = await getTopSellingProduct(5);
-        const pieData = res.map((item: TopSelling) => ({
+        const pieData = normalizeArrayResponse<TopSelling>(res).map((item: TopSelling) => ({
           name: formatProductWithWeight(item.product_name, item.weight_grams),
           total_sold: Number(item.total_sold || 0),
           total_sales: Number(item.total_sales || 0),
@@ -136,22 +147,24 @@ const Dashboard: React.FC = () => {
         setTopSellingProduct(pieData);
       } catch (e) {
         console.warn("Gagal ambil produk terlaris:", e);
+        setTopSellingProduct([]);
       }
 
       try {
-        const response = await getTransactionsReport(30);
+        const response = await getTransactionsReport(7);
         // Pastikan total_sales dikonversi ke number
         console.log("Chart API response:", response); // 👉 cek isi response
         // Asumsikan response adalah array langsung, kalau tidak kita perbaiki
-        const formatted = response.map((item: any) => ({
+        const formatted = normalizeArrayResponse<any>(response).map((item: any) => ({
           date: item.date,
           total_sales: parseFloat(item.total_sales || 0),
         }));
         setChartData(formatted);
         console.log(chartData);
-        setLoadingChart(false);
       } catch (error: any) {
         setErrorChart(error.message || "Gagal memuat chart");
+        setChartData([]);
+      } finally {
         setLoadingChart(false);
       }
     } catch (err: any) {
@@ -162,11 +175,14 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (token) {
-  //     fetchData();
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    if (token && role) {
+      fetchData();
+    } else {
+      setLoading(false);
+      setLoadingChart(false);
+    }
+  }, [token, role]);
 
   // setup Alert
   const [alert, setAlert] = useState<AlertState>({
