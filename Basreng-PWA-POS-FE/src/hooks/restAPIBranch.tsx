@@ -53,6 +53,7 @@ export const getBranches = async (): Promise<Branch[] | any> => {
     checkOKResponse(response);
 
     const data = await response.json();
+    console.log("Fetched branches:", data.data);
     return data.data;
   } catch (error) {
     console.error("Error fetching branches:", error);

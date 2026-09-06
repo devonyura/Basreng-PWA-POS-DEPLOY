@@ -12,7 +12,10 @@ import {
   IonSegment,
   IonToast,
   IonText,
-  IonLabel,
+  IonSelect,
+  IonSelectOption,
+  IonSpinner,
+  IonAlert,
 } from "@ionic/react";
 import "./LoginForm.css";
 import { useState, useEffect } from "react";
@@ -21,8 +24,7 @@ import { loginRequest } from "../hooks/restAPIRequest";
 import { useAuth } from "../hooks/useAuthCookie";
 import { warning } from "ionicons/icons";
 import AlertInfo, { AlertState } from "../components/AlertInfo";
-import LocationBranchModal from "../components/LocationBranchModal";
-import { Branch } from "../hooks/restAPIBranch";
+import { Branch, getBranches } from "../hooks/restAPIBranch";
 
 interface LocationState {
   isTokenExpired?: boolean;
@@ -38,7 +40,7 @@ const LoginForm: React.FC = () => {
     hideButton: false,
   });
 
-  const { login, token, role, setBranchAfterLocation } = useAuth();
+  const { login, token, setBranchAfterLocation } = useAuth();
   const history = useHistory();
   const location = useLocation<LocationState>();
   const [isTokenExpired, setIsTokenExpired] = useState(
@@ -50,7 +52,11 @@ const LoginForm: React.FC = () => {
   const [selectedBranchId, setSelectedBranchId] = useState<string | undefined>();
   const [selectedBranchName, setSelectedBranchName] = useState<string>("");
   const [selectedBranchData, setSelectedBranchData] = useState<Branch | undefined>();
-  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showBranchSelect, setShowBranchSelect] = useState(false);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [isLoadingBranches, setIsLoadingBranches] = useState(false);
+  const [branchError, setBranchError] = useState("");
+  const [showBranchConfirmation, setShowBranchConfirmation] = useState(false);
   
   const resetForm = () => {
     setUsername("");
@@ -70,24 +76,43 @@ const LoginForm: React.FC = () => {
     return true;
   };
 
-  const handleLogin = async () => {
+  const handleOpenBranchSelect = async () => {
+    setShowBranchSelect(true);
+    setBranchError("");
+
+    if (branches.length > 0 || isLoadingBranches) return;
+
+    setIsLoadingBranches(true);
+    try {
+      const branchList = await getBranches();
+      if (Array.isArray(branchList)) {
+        setBranches(branchList);
+        if (branchList.length === 0) {
+          setBranchError("Daftar cabang kosong. Silahkan coba lagi.");
+        }
+      } else {
+        setBranchError("Gagal memuat daftar cabang. Silahkan coba lagi.");
+      }
+    } catch (error) {
+      console.error("Gagal mengambil daftar cabang:", error);
+      setBranchError("Gagal memuat daftar cabang. Silahkan coba lagi.");
+    } finally {
+      setIsLoadingBranches(false);
+    }
+  };
+
+  const handleBranchChange = (branchId: string) => {
+    const branch = branches.find(
+      (item) => String(item.branch_id) === String(branchId),
+    );
+
+    setSelectedBranchId(branchId);
+    setSelectedBranchName(branch?.branch_name || "");
+    setSelectedBranchData(branch);
+  };
+
+  const processLogin = async () => {
     const authData = { username, password, branch_id: selectedBranchId };
-
-    if (
-      !checkForm("Username", authData.username) ||
-      !checkForm("Password", authData.password)
-    ) {
-      return;
-    }
-
-    if (!authData.branch_id) {
-      setAlert({
-        showAlert: true,
-        header: "Peringatan",
-        alertMesage: "Lokasi Cabang belum dipilih!",
-      });
-      return;
-    }
 
     setAlert({
       showAlert: true,
@@ -135,6 +160,28 @@ const LoginForm: React.FC = () => {
     }
 
     resetForm();
+  };
+
+  const handleLogin = () => {
+    const authData = { username, password, branch_id: selectedBranchId };
+
+    if (
+      !checkForm("Username", authData.username) ||
+      !checkForm("Password", authData.password)
+    ) {
+      return;
+    }
+
+    if (!authData.branch_id) {
+      setAlert({
+        showAlert: true,
+        header: "Peringatan",
+        alertMesage: "Lokasi Cabang belum dipilih!",
+      });
+      return;
+    }
+
+    setShowBranchConfirmation(true);
   };
 
   useEffect(() => {
@@ -202,12 +249,34 @@ const LoginForm: React.FC = () => {
               <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
             </IonInput>
           </IonItem>
-          <IonItem button onClick={() => setShowLocationModal(true)} lines="full" style={{ marginBottom: "15px" }}>
-            <IonLabel>Lokasi Cabang</IonLabel>
-            <IonText color={selectedBranchName ? "primary" : "medium"}>
-              {selectedBranchName || "Pilih Cabang (Wajib)"}
-            </IonText>
-          </IonItem>
+          <IonButton
+            onClick={handleOpenBranchSelect}
+            expand="full"
+            shape="round"
+            color="primary"
+            disabled={isLoadingBranches}
+          >
+            {isLoadingBranches ? <IonSpinner name="crescent" /> : selectedBranchName || "Pilih Cabang (Wajib)"}
+          </IonButton>
+          {showBranchSelect && !isLoadingBranches && (
+            <IonItem>
+              <IonSelect
+                label="Lokasi Cabang"
+                labelPlacement="stacked"
+                value={selectedBranchId}
+                placeholder={branchError || "Pilih Cabang"}
+                onIonChange={(event) => handleBranchChange(event.detail.value)}
+                interface="popover"
+                disabled={branches.length === 0}
+              >
+                {branches.map((branch) => (
+                  <IonSelectOption key={branch.branch_id} value={branch.branch_id}>
+                    {branch.branch_name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+          )}
           <IonButton
             expand="full"
             shape="round"
@@ -229,14 +298,26 @@ const LoginForm: React.FC = () => {
         }
         hideButton={alert.hideButton}
       />
-      <LocationBranchModal
-        isOpen={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onBranchSelected={(id, name, branchData) => {
-          setSelectedBranchId(id);
-          setSelectedBranchName(name);
-          setSelectedBranchData(branchData);
-        }}
+      <IonAlert
+        isOpen={showBranchConfirmation}
+        header="Konfirmasi Lokasi"
+        message={`Yakin Lokasi kamu sekarang ${selectedBranchName}?`}
+        buttons={[
+          {
+            text: "Batal",
+            role: "cancel",
+            handler: () => setShowBranchConfirmation(false),
+          },
+          {
+            text: "Yakin",
+            role: "confirm",
+            handler: () => {
+              setShowBranchConfirmation(false);
+              void processLogin();
+            },
+          },
+        ]}
+        onDidDismiss={() => setShowBranchConfirmation(false)}
       />
     </IonPage>
   );
